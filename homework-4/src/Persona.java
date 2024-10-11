@@ -4,7 +4,6 @@ public class Persona {
     private String hobby;
 
     public Persona() {
-
     }
 
     public Persona(String nombre, Integer edad, String hobby) {
