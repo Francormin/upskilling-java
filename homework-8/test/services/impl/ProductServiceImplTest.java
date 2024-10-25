@@ -83,5 +83,5 @@ class ProductServiceImplTest {
         // Verificamos que se ejecute la cantidad de veces necesaria
         verify(cartMock, times(1)).getTotalProducts();
     }
-    
+
 }
