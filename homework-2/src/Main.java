@@ -21,9 +21,9 @@ public class Main {
 
          */
 
-        /*
 
-        Ejercicio de manipulación de Strings
+
+        // Ejercicio de manipulación de Strings
 
         Scanner lecture = new Scanner(System.in);
         System.out.print("Ingrese una frase: ");
@@ -35,7 +35,7 @@ public class Main {
 
         System.out.print("Ingrese una palabra para saber si se encuentra en la frase: ");
         String palabra = lecture.nextLine();
-        if (frase.indexOf(palabra) < 0) {
+        if (!frase.contains(palabra)) {
             System.out.println("Palabra no encontrada");
         } else {
             System.out.println("Palabra encontrada");
@@ -46,11 +46,11 @@ public class Main {
         System.out.println("Primera palabra: " + frase.substring(0, indiceFinal));
         System.out.println("Nueva frase: " + frase.concat(" -Punto final-"));
 
-        */
+
 
         /*
 
-        Ejercicio de métodos estáticos
+        // Ejercicio de métodos estáticos
 
         Scanner lectura = new Scanner(System.in);
         int num1;
@@ -97,9 +97,9 @@ public class Main {
 
         /*
 
-        Ejercicio con interfaces
+        // Ejercicio con interfaces
 
-        ArrayList<Producto> productos = new ArrayList();
+        List<Producto> productos = new ArrayList<>();
         Producto producto1 = new Producto("Camisa", 22.99, "DW842WN", true);
         Producto producto2 = new Producto("Remera", 12.49, "DA731SP", true);
         Producto producto3 = new Producto("Pantalón jean", 19.99, "DD574AL");
@@ -120,21 +120,21 @@ public class Main {
 
         Collections.sort(productos);
 
-        System.out.println("");
+        System.out.println();
         System.out.println("Productos ordenados por precio: " + productos);
 
-        ArrayList<Producto> productosConStock = new ArrayList();
-        ArrayList<Producto> productosSinStock = new ArrayList();
+        List<Producto> productosConStock = new ArrayList<>();
+        List<Producto> productosSinStock = new ArrayList<>();
         for (Producto producto: productos) {
             if (producto.cumpleFiltro(producto))
                 productosConStock.add(producto);
             else productosSinStock.add(producto);
         }
 
-        System.out.println("");
+        System.out.println();
         System.out.println("Productos con stock: " + productosConStock);
 
-        System.out.println("");
+        System.out.println();
         System.out.println("Productos sin stock: " + productosSinStock);
 
         */
