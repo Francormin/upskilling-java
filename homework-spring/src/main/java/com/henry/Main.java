@@ -28,7 +28,7 @@ public class Main {
         task.setId(1);
         task.setTitle("Finish Spring Project");
         task.setDescription("Complete the Spring framework practice project.");
-        task.setDueDate(new java.sql.Date(System.currentTimeMillis()));
+        task.setDueDate(new Date(System.currentTimeMillis()));
 
         // Add the task
         taskService.addTask(task);
