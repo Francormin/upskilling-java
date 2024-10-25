@@ -30,7 +30,10 @@
 }</component>
   <component name="ProjectId" id="2mtsluSKln6B9NAIsMVkrtiZiym" />
   <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="autoscrollToSource" value="true" />
     <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="openDirectoriesWithSingleClick" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
@@ -39,7 +42,7 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Franco/Documentos/Tech/Stuff/Java/upskilling-java/clase-String"
+    "last_opened_file_path": "C:/Users/Franco/Documentos/Tech/Stuff/Java/upskilling-java/generics"
   }
 }]]></component>
   <component name="RunManager">
