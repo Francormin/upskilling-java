@@ -7,9 +7,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        // Ejercicio del círculo
         /*
-
-        Ejercicio del círculo
 
         Scanner lectura = new Scanner(System.in);
         System.out.print("Ingrese el radio del círculo: ");
@@ -21,9 +20,8 @@ public class Main {
 
          */
 
-
-
         // Ejercicio de manipulación de Strings
+        /*
 
         Scanner lecture = new Scanner(System.in);
         System.out.print("Ingrese una frase: ");
@@ -46,11 +44,10 @@ public class Main {
         System.out.println("Primera palabra: " + frase.substring(0, indiceFinal));
         System.out.println("Nueva frase: " + frase.concat(" -Punto final-"));
 
-
-
-        /*
+        */
 
         // Ejercicio de métodos estáticos
+        /*
 
         Scanner lectura = new Scanner(System.in);
         int num1;
@@ -95,9 +92,8 @@ public class Main {
 
         */
 
-        /*
-
         // Ejercicio con interfaces
+        /*
 
         List<Producto> productos = new ArrayList<>();
         Producto producto1 = new Producto("Camisa", 22.99, "DW842WN", true);
