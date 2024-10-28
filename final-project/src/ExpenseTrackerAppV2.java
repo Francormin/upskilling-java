@@ -1,11 +1,14 @@
 import entities.Expense;
 import entities.ExpenseCategory;
+import exceptions.InvalidExpenseDescriptionException;
 import interfaces.ExpenseAmountValidator;
-import interfaces.impl.ExpenseAmountValidatorImpl;
-import interfaces.ExpenseCalculator;
-import interfaces.impl.ExpenseCalculatorImpl;
 import interfaces.ExpenseDateValidator;
+import interfaces.ExpenseDescriptionValidator;
+import interfaces.impl.ExpenseAmountValidatorImpl;
 import interfaces.impl.ExpenseDateValidatorImpl;
+import interfaces.impl.ExpenseDescriptionValidatorImpl;
+import interfaces.impl.ExpenseCalculatorImpl;
+import interfaces.ExpenseCalculator;
 import exceptions.InvalidExpenseAmountException;
 import exceptions.InvalidExpenseDateException;
 import utils.NotificationUtils;
@@ -23,6 +26,7 @@ public class ExpenseTrackerAppV2 {
         ExpenseAmountValidator expenseAmountValidator = new ExpenseAmountValidatorImpl();
         ExpenseDateValidator expenseDateValidator = new ExpenseDateValidatorImpl();
         ExpenseCalculator expenseCalculator = new ExpenseCalculatorImpl();
+        ExpenseDescriptionValidator expenseDescriptionValidator = new ExpenseDescriptionValidatorImpl();
 
         // Cantidad de gastos a cargar en el sistema
         int totalExpensesToEnter = requestTotalExpenses(scanner);
@@ -38,12 +42,14 @@ public class ExpenseTrackerAppV2 {
             double expenseAmount = requestExpenseAmount(scanner, expenseAmountValidator, index);
             String expenseCategoryName = requestExpenseCategory(scanner);
             String expenseDate = requestExpenseDate(scanner, expenseDateValidator);
+            String expenseDescription = requestExpenseDescription(scanner, expenseDescriptionValidator);
 
             expense.setId(counter);
             expense.setAmount(expenseAmount);
             expenseCategory.setName(expenseCategoryName);
             expense.setCategory(expenseCategory);
             expense.setDate(expenseDate);
+            expense.setDescription(expenseDescription);
 
             expenses[index] = expense;
             counter++;
@@ -138,6 +144,27 @@ public class ExpenseTrackerAppV2 {
                 validator.validateDate(expenseDate);
                 return expenseDate;
             } catch (InvalidExpenseDateException e) {
+                NotificationUtils.showError(e.getMessage());
+            }
+        }
+    }
+
+    private static String requestExpenseDescription(Scanner scanner, ExpenseDescriptionValidator validator) {
+        String expenseDescription;
+
+        while (true) {
+            System.out.print("Ingrese la descripción del gasto: ");
+            expenseDescription = scanner.nextLine().trim();
+
+            if (ValidationUtils.isBlank(expenseDescription)) {
+                NotificationUtils.showError("La descripción no puede estar vacía.");
+                continue;
+            }
+
+            try {
+                validator.validateDescription(expenseDescription);
+                return expenseDescription;
+            } catch (InvalidExpenseDescriptionException e) {
                 NotificationUtils.showError(e.getMessage());
             }
         }
