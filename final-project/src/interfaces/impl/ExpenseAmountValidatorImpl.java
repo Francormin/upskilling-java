@@ -1,6 +1,7 @@
-package interfaces;
+package interfaces.impl;
 
 import exceptions.InvalidExpenseAmountException;
+import interfaces.ExpenseAmountValidator;
 
 public class ExpenseAmountValidatorImpl implements ExpenseAmountValidator {
     @Override
