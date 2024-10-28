@@ -1,11 +1,11 @@
 import entities.Expense;
 import entities.ExpenseCategory;
 import interfaces.ExpenseAmountValidator;
-import interfaces.ExpenseAmountValidatorImpl;
+import interfaces.impl.ExpenseAmountValidatorImpl;
 import interfaces.ExpenseCalculator;
-import interfaces.ExpenseCalculatorImpl;
+import interfaces.impl.ExpenseCalculatorImpl;
 import interfaces.ExpenseDateValidator;
-import interfaces.ExpenseDateValidatorImpl;
+import interfaces.impl.ExpenseDateValidatorImpl;
 import exceptions.InvalidExpenseAmountException;
 import exceptions.InvalidExpenseDateException;
 import utils.NotificationUtils;
