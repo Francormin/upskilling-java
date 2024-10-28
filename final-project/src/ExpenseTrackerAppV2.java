@@ -1,6 +1,6 @@
 import entities.Expense;
 import entities.ExpenseCategory;
-import exceptions.InvalidExpenseDescriptionException;
+import interfaces.ExpenseCalculator;
 import interfaces.ExpenseAmountValidator;
 import interfaces.ExpenseDateValidator;
 import interfaces.ExpenseDescriptionValidator;
@@ -8,13 +8,16 @@ import interfaces.impl.ExpenseAmountValidatorImpl;
 import interfaces.impl.ExpenseDateValidatorImpl;
 import interfaces.impl.ExpenseDescriptionValidatorImpl;
 import interfaces.impl.ExpenseCalculatorImpl;
-import interfaces.ExpenseCalculator;
 import exceptions.InvalidExpenseAmountException;
 import exceptions.InvalidExpenseDateException;
+import exceptions.InvalidExpenseDescriptionException;
 import utils.NotificationUtils;
 import utils.ValidationUtils;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.InputMismatchException;
+import java.util.Map;
+import java.util.Scanner;
 
 public class ExpenseTrackerAppV2 {
     public static int counter = 1;
@@ -54,8 +57,9 @@ public class ExpenseTrackerAppV2 {
             counter++;
         }
 
+        // Contar y mostrar las categorías de los gastos del usuario
         Map<String, Integer> categoryCounter = countExpenseCategories(expenses);
-        displayCategoryCount(categoryCounter);
+        displayCategoryCounter(categoryCounter);
 
         // Resultados finales que se muestran después de que el usuario haya cargado los gastos
         System.out.println("\nTotal de gastos ingresados: " + expenseCalculator.calculateTotalExpenses(expenses));
@@ -181,7 +185,7 @@ public class ExpenseTrackerAppV2 {
         return categoryCounter;
     }
 
-    private static void displayCategoryCount(Map<String, Integer> categoryCounter) {
+    private static void displayCategoryCounter(Map<String, Integer> categoryCounter) {
         System.out.println("\nConteo de categorías de los gastos:");
         for (Map.Entry<String, Integer> entry : categoryCounter.entrySet()) {
             System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue());
