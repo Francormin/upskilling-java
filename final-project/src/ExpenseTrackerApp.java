@@ -1,6 +1,8 @@
 import entities.ExpenseCategory;
 import entities.Expense;
 import entities.User;
+import interfaces.ExpenseManagement;
+import interfaces.impl.ExpenseManagementImpl;
 import interfaces.ExpenseProcessor;
 import exceptions.ExpenseNotFoundException;
 import exceptions.InvalidExpenseAmountException;
@@ -14,13 +16,16 @@ public class ExpenseTrackerApp {
         ExpenseCategory foodExpenseCategory = new ExpenseCategory("Food", "Groceries and dining out");
         ExpenseCategory travelExpenseCategory = new ExpenseCategory("Travel", "Transportation");
 
+        // ExpenseManagement interface implementation
+        ExpenseManagement expenseManagement = new ExpenseManagementImpl();
+
         // Creating new Expenses and adding it to the User created earlier
         try {
             Expense expense1 = new Expense(25.5, "20/10/2023", foodExpenseCategory, "Dinner at restaurant");
             Expense expense2 = new Expense(14.9, "23/10/2023", foodExpenseCategory, "Groceries");
 
-            user.addExpense(expense1);
-            user.addExpense(expense2);
+            expenseManagement.addExpense(user, expense1);
+            expenseManagement.addExpense(user, expense2);
         } catch (InvalidExpenseAmountException e) {
             System.err.println("Adding expense error: " + e.getMessage());
         }
@@ -30,7 +35,7 @@ public class ExpenseTrackerApp {
             System.out.println(expense);
         }
 
-        // ExpenseProcessor functional interface implementations
+        // ExpenseProcessor functional interface direct implementations with lambdas
 
         // Using the functional interface to calculate total expenses
         ExpenseProcessor totalCalculator = expenses -> expenses.stream()
@@ -53,7 +58,7 @@ public class ExpenseTrackerApp {
         try {
             // Index validation previous to remove
             Expense expenseToRemove = user.getExpenseAtIndex(1);
-            user.removeExpense(expenseToRemove);
+            expenseManagement.removeExpense(user, expenseToRemove);
         } catch (ExpenseNotFoundException e) {
             System.err.println("Removing expense error: " + e.getMessage());
         }
@@ -67,7 +72,8 @@ public class ExpenseTrackerApp {
         try {
             // Index validation previous to update
             Expense expenseToUpdate = user.getExpenseAtIndex(0);
-            user.updateExpense(
+            expenseManagement.updateExpense(
+                    user,
                     expenseToUpdate,
                     null,
                     null,
