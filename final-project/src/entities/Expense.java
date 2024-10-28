@@ -15,7 +15,11 @@ public class Expense {
     public Expense() {
     }
 
-    public Expense(Double amount, String date, ExpenseCategory expenseCategory) throws InvalidExpenseAmountException {
+    public Expense(
+            Double amount,
+            String date,
+            ExpenseCategory expenseCategory) throws InvalidExpenseAmountException {
+
         if (amount <= 0) {
             throw new InvalidExpenseAmountException("The expense amount must be greater than zero.");
         }
@@ -23,11 +27,18 @@ public class Expense {
         this.amount = amount;
         this.date = date;
         this.expenseCategory = expenseCategory;
+
     }
 
-    public Expense(Double amount, String date, ExpenseCategory expenseCategory, String description) throws InvalidExpenseAmountException {
+    public Expense(
+            Double amount,
+            String date,
+            ExpenseCategory expenseCategory,
+            String description) throws InvalidExpenseAmountException {
+
         this(amount, date, expenseCategory);
         this.description = description.toLowerCase();
+
     }
 
     public void updateDetails(
@@ -47,6 +58,7 @@ public class Expense {
         newCategory.ifPresent(expenseCategory -> this.expenseCategory = expenseCategory);
         newDescription.ifPresent(description -> this.description = description.toLowerCase());
         newDate.ifPresent(date -> this.date = date);
+
     }
 
     public Integer getId() {
