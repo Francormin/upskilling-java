@@ -14,8 +14,7 @@ import exceptions.InvalidExpenseDateException;
 import utils.NotificationUtils;
 import utils.ValidationUtils;
 
-import java.util.InputMismatchException;
-import java.util.Scanner;
+import java.util.*;
 
 public class ExpenseTrackerAppV2 {
     public static int counter = 1;
@@ -60,6 +59,21 @@ public class ExpenseTrackerAppV2 {
         System.out.println("\nDETALLE DE GASTOS INGRESADOS");
         for (Expense expense : expenses) {
             System.out.println(expense);
+        }
+
+        // Crear el Map para contar las categorías de los gastos
+        Map<String, Integer> categoryCounter = new HashMap<>();
+
+        // Llenar el Map con los gastos del usuario
+        for (Expense expense : expenses) {
+            ExpenseCategory category = expense.getCategory();
+            categoryCounter.put(category.getName(), categoryCounter.getOrDefault(category.getName(), 0) + 1);
+        }
+
+        // Mostrar el resultado
+        System.out.println("\nConteo de categorías:");
+        for (Map.Entry<String, Integer> entry : categoryCounter.entrySet()) {
+            System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue());
         }
     }
 
