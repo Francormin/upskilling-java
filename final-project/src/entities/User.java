@@ -1,14 +1,11 @@
 package entities;
 
-import interfaces.ExpenseManagement;
 import exceptions.ExpenseNotFoundException;
-import exceptions.InvalidExpenseAmountException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
-public class User implements ExpenseManagement {
+public class User {
     private static Integer counter = 0;
     private Integer id;
     private String name;
@@ -31,42 +28,6 @@ public class User implements ExpenseManagement {
         this(name, surname);
         this.email = email;
         this.password = password;
-    }
-
-    // ExpenseManagement interface implementation
-    @Override
-    public void addExpense(Expense expense) {
-        expenses.add(expense);
-        System.out.println("Expense added: " + expense.getDescription());
-    }
-
-    @Override
-    public void removeExpense(Expense expense) throws ExpenseNotFoundException {
-        if (!expenses.contains(expense)) {
-            throw new ExpenseNotFoundException("Expense not found.");
-        }
-        expenses.remove(expense);
-        System.out.println("Expense with ID " + expense.getId() + " removed.");
-    }
-
-    @Override
-    public void updateExpense(
-            Expense expense,
-            Double newAmount,
-            String newDate,
-            ExpenseCategory newExpenseCategory,
-            String newDescription) throws ExpenseNotFoundException, InvalidExpenseAmountException {
-
-        if (!expenses.contains(expense)) {
-            throw new ExpenseNotFoundException("Expense not found.");
-        }
-        expense.updateDetails(
-                Optional.ofNullable(newAmount),
-                Optional.ofNullable(newDate),
-                Optional.ofNullable(newExpenseCategory),
-                Optional.ofNullable(newDescription)
-        );
-        System.out.println("Expense with ID " + expense.getId() + " updated.");
     }
 
     // Validation method
