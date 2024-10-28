@@ -54,26 +54,14 @@ public class ExpenseTrackerAppV2 {
             counter++;
         }
 
+        Map<String, Integer> categoryCounter = countExpenseCategories(expenses);
+        displayCategoryCount(categoryCounter);
+
         // Resultados finales que se muestran después de que el usuario haya cargado los gastos
         System.out.println("\nTotal de gastos ingresados: " + expenseCalculator.calculateTotalExpenses(expenses));
         System.out.println("\nDETALLE DE GASTOS INGRESADOS");
         for (Expense expense : expenses) {
             System.out.println(expense);
-        }
-
-        // Crear el Map para contar las categorías de los gastos
-        Map<String, Integer> categoryCounter = new HashMap<>();
-
-        // Llenar el Map con los gastos del usuario
-        for (Expense expense : expenses) {
-            ExpenseCategory category = expense.getCategory();
-            categoryCounter.put(category.getName(), categoryCounter.getOrDefault(category.getName(), 0) + 1);
-        }
-
-        // Mostrar el resultado
-        System.out.println("\nConteo de categorías:");
-        for (Map.Entry<String, Integer> entry : categoryCounter.entrySet()) {
-            System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue());
         }
     }
 
@@ -181,6 +169,22 @@ public class ExpenseTrackerAppV2 {
             } catch (InvalidExpenseDescriptionException e) {
                 NotificationUtils.showError(e.getMessage());
             }
+        }
+    }
+
+    private static Map<String, Integer> countExpenseCategories(Expense[] expenses) {
+        Map<String, Integer> categoryCounter = new HashMap<>();
+        for (Expense expense : expenses) {
+            String categoryName = expense.getCategory().getName();
+            categoryCounter.put(categoryName, categoryCounter.getOrDefault(categoryName, 0) + 1);
+        }
+        return categoryCounter;
+    }
+
+    private static void displayCategoryCount(Map<String, Integer> categoryCounter) {
+        System.out.println("\nConteo de categorías de los gastos:");
+        for (Map.Entry<String, Integer> entry : categoryCounter.entrySet()) {
+            System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue());
         }
     }
 }
