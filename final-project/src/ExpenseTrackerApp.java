@@ -1,11 +1,10 @@
-import entities.ExpenseCategory;
 import entities.Expense;
+import entities.ExpenseCategory;
 import entities.User;
-import interfaces.ExpenseManagement;
-import interfaces.impl.ExpenseManagementImpl;
-import interfaces.ExpenseProcessor;
 import exceptions.ExpenseNotFoundException;
 import exceptions.InvalidExpenseAmountException;
+import interfaces.ExpenseManagement;
+import interfaces.impl.ExpenseManagementImpl;
 
 public class ExpenseTrackerApp {
     public static void main(String[] args) throws InvalidExpenseAmountException {
@@ -34,25 +33,6 @@ public class ExpenseTrackerApp {
         for (Expense expense : user.getExpenses()) {
             System.out.println(expense);
         }
-
-        // ExpenseProcessor functional interface direct implementations with lambdas
-
-        // Using the functional interface to calculate total expenses
-        ExpenseProcessor totalCalculator = expenses -> expenses.stream()
-                .mapToDouble(Expense::getAmount)
-                .sum();
-
-        double totalSpent = totalCalculator.process(user.getExpenses());
-        System.out.println("\nTotal spent: " + totalSpent);
-
-        // Using the functional interface to calculate average expense
-        ExpenseProcessor averageCalculator = expenses -> expenses.stream()
-                .mapToDouble(Expense::getAmount)
-                .average()
-                .orElse(0.0);
-
-        double averageSpent = averageCalculator.process(user.getExpenses());
-        System.out.println("Average spent per expense: " + averageSpent);
 
         // Removing an Expense from the User created earlier
         try {
