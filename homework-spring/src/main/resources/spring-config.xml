@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-           http://www.springframework.org/schema/beans/spring-beans.xsd">
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/tx
+                           http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <!-- Enable transaction handling -->
+    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+    <!-- Bean definitions -->
 
     <!-- DataSource for H2 Database -->
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
@@ -12,15 +20,20 @@
         <property name="password" value=""/>
     </bean>
 
-    <!-- Trigger the schema creation on startup -->
+    <!-- Transaction Manager for handling transactions -->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <!-- Trigger the schema destruction / creation on startup -->
     <bean id="dataSourceInitializer" class="org.springframework.jdbc.datasource.init.DataSourceInitializer">
         <property name="dataSource" ref="dataSource"/>
         <property name="databasePopulator">
             <bean class="org.springframework.jdbc.datasource.init.ResourceDatabasePopulator">
                 <property name="scripts">
                     <list>
-                        <!-- Reference to the schema.sql file in the classpath -->
-                        <value>classpath:schema.sql</value>
+                        <value>classpath:dropTable.sql</value>
+                        <value>classpath:createTable.sql</value>
                     </list>
                 </property>
             </bean>
@@ -29,11 +42,6 @@
 
     <!-- JdbcTemplate to interact with the database -->
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-        <property name="dataSource" ref="dataSource"/>
-    </bean>
-
-    <!-- Transaction Manager -->
-    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
         <property name="dataSource" ref="dataSource"/>
     </bean>
 
