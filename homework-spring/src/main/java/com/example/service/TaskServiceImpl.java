@@ -1,7 +1,7 @@
-package com.henry.service;
+package com.example.service;
 
-import com.henry.model.Task;
-import com.henry.util.TaskRowMapper;
+import com.example.model.Task;
+import com.example.util.TaskRowMapper;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;

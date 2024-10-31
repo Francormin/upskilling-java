@@ -1,6 +1,6 @@
-package com.henry.util;
+package com.example.util;
 
-import com.henry.model.Task;
+import com.example.model.Task;
 
 import org.springframework.jdbc.core.RowMapper;
 

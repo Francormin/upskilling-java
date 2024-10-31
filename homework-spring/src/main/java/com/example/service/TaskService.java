@@ -1,6 +1,6 @@
-package com.henry.service;
+package com.example.service;
 
-import com.henry.model.Task;
+import com.example.model.Task;
 
 import java.util.List;
 
