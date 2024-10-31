@@ -46,7 +46,7 @@
     </bean>
 
     <!-- TaskServiceImpl bean -->
-    <bean id="taskService" class="com.henry.service.TaskServiceImpl">
+    <bean id="taskService" class="com.example.service.TaskServiceImpl">
         <!-- Injecting the jdbcTemplate dependency -->
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
     </bean>
