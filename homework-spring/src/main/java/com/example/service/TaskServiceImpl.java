@@ -4,9 +4,11 @@ import com.henry.model.Task;
 import com.henry.util.TaskRowMapper;
 
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Transactional
 public class TaskServiceImpl implements TaskService {
 
 //    // A simple in-memory list to store tasks for this example
