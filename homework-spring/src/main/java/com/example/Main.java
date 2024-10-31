@@ -1,7 +1,7 @@
-package com.henry;
+package com.example;
 
-import com.henry.model.Task;
-import com.henry.service.TaskService;
+import com.example.model.Task;
+import com.example.service.TaskService;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
