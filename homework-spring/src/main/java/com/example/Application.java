@@ -8,7 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.Date;
 
-public class Main {
+public class Application {
 
     public static void main(String[] args) {
         // Load the Spring XML configuration file
