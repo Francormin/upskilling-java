@@ -28,7 +28,7 @@ public class TaskServiceImpl implements TaskService {
 
         String sql = "INSERT INTO tasks (id, title, description, due_date) VALUES (?, ?, ?, ?)";
         jdbcTemplate.update(sql, task.getId(), task.getTitle(), task.getDescription(), task.getDueDate());
-        System.out.println("Task added to database: " + task.getTitle());
+        System.out.println("Task added: " + task.getTitle());
     }
 
     @Override
@@ -39,7 +39,7 @@ public class TaskServiceImpl implements TaskService {
 //            .orElse(null);
 
         String sql = "SELECT * FROM tasks WHERE id = ?";
-        return (Task) jdbcTemplate.queryForObject(sql, new Object[]{taskId}, new TaskRowMapper());
+        return jdbcTemplate.queryForObject(sql, new Object[]{taskId}, new TaskRowMapper());
     }
 
     @Override
