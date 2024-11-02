@@ -20,7 +20,7 @@ public class SpringApplication {
         // Create new tasks
         Task task1 = new Task();
         task1.setId(1);
-        task1.setTitle("Starting Spring Project");
+        task1.setTitle("Start Spring Project");
         task1.setDescription("Initialize the Spring framework practice project.");
         task1.setDueDate(new Date(System.currentTimeMillis()));
 
