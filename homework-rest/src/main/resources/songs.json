@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "title": "Bohemian Rhapsody",
+    "artist": "Queen",
+    "releaseYear": 1975
+  },
+  {
+    "id": 2,
+    "title": "Imagine",
+    "artist": "John Lennon",
+    "releaseYear": 1971
+  },
+  {
+    "id": 3,
+    "title": "Smells Like Teen Spirit",
+    "artist": "Nirvana",
+    "releaseYear": 1991
+  }
+]
