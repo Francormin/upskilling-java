@@ -1,33 +1,64 @@
 package com.example.controller;
 
-import com.example.model.User;
+import com.example.dto.UserDTO;
 import com.example.service.UserService;
 
-import java.util.List;
-import java.util.Optional;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/users")
+@Validated // Habilita las validaciones en los parámetros de los métodos
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
-    public List<User> getAll() {
-        return userService.getAll();
+    // No es necesario @Autowired, ya que la clase posee un solo constructor
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
-    public Optional<User> getById(Long id) {
-        return userService.getById(id);
+    @GetMapping
+    public ResponseEntity<List<UserDTO>> getAll() {
+        List<UserDTO> users = userService.getAll();
+        return new ResponseEntity<>(users, HttpStatus.OK);
     }
 
-    public void create(User user) {
-        userService.create(user);
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDTO> getById(@PathVariable @Positive Long id) {
+        UserDTO userDTO = userService.getById(id);
+        return new ResponseEntity<>(userDTO, HttpStatus.OK);
     }
 
-    public void update(Long id, User userDetails) {
-        userService.update(id, userDetails);
+    @PostMapping
+    public ResponseEntity<UserDTO> create(@Valid @RequestBody UserDTO userDTO) {
+        UserDTO savedUser = userService.create(userDTO);
+        return new ResponseEntity<>(savedUser, HttpStatus.CREATED);
     }
 
-    public void delete(Long id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> update(@PathVariable @Positive Long id, @Valid @RequestBody UserDTO userDTO) {
+        userService.update(id, userDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable @Positive Long id) {
         userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
 }
