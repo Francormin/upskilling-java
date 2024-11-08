@@ -1,53 +1,35 @@
 package com.example.service;
 
 import com.example.model.Task;
-import com.example.util.TaskRowMapper;
+import com.example.repository.TaskRepository;
 
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@Transactional
 public class TaskServiceImpl implements TaskService {
 
-//    // A simple in-memory list to store tasks for this example
-//    private final List<Task> tasks = new ArrayList<>();
+    private TaskRepository taskRepository;
 
-    private JdbcTemplate jdbcTemplate;
-
-    // Setter for JdbcTemplate (Spring will inject this automatically)
-    public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+    // Setter method to allow dependency injection from XML
+    public void setTaskRepository(TaskRepository taskRepository) {
+        this.taskRepository = taskRepository;
     }
 
     @Override
+    @Transactional
     public void addTask(Task task) {
-//        tasks.add(task);
-//        System.out.println("Task added: " + task.getTitle());
-
-        String sql = "INSERT INTO tasks (id, title, description, due_date) VALUES (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, task.getId(), task.getTitle(), task.getDescription(), task.getDueDate());
-        System.out.println("Task added: " + task.getTitle());
+        taskRepository.addTask(task);
     }
 
     @Override
     public Task getTaskById(int taskId) {
-//        return tasks.stream()
-//            .filter(task -> task.getId() == taskId)
-//            .findFirst()
-//            .orElse(null);
-
-        String sql = "SELECT * FROM tasks WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{taskId}, new TaskRowMapper());
+        return taskRepository.getTaskById(taskId);
     }
 
     @Override
     public List<Task> listTasks() {
-//        return tasks;
-
-        String sql = "SELECT * FROM tasks";
-        return jdbcTemplate.query(sql, new TaskRowMapper());
+        return taskRepository.listTasks();
     }
 
 }
