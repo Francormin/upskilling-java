@@ -3,8 +3,6 @@ package com.example.service;
 import com.example.model.Task;
 import com.example.repository.TaskRepository;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 
 public class TaskServiceImpl implements TaskService {
@@ -17,7 +15,6 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @Transactional
     public void addTask(Task task) {
         taskRepository.addTask(task);
     }
