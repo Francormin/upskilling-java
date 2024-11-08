@@ -21,13 +21,13 @@ public class SpringApplication {
         Task task1 = new Task();
         task1.setId(1);
         task1.setTitle("Start Spring Project");
-        task1.setDescription("Initialize the Spring framework practice project.");
+        task1.setDescription("Initialize the Spring practice project.");
         task1.setDueDate(new Date(System.currentTimeMillis()));
 
         Task task2 = new Task();
         task2.setId(2);
         task2.setTitle("Finish Spring Project");
-        task2.setDescription("Complete the Spring framework practice project.");
+        task2.setDescription("Complete the Spring practice project.");
         task2.setDueDate(new Date(System.currentTimeMillis()));
 
         // Add the tasks
@@ -36,8 +36,7 @@ public class SpringApplication {
 
         // List all tasks
         System.out.println("\nListing all tasks:");
-        taskService.listTasks()
-            .forEach(t -> System.out.println(t.getTitle() + " - Due: " + t.getDueDate()));
+        taskService.listTasks().forEach(t -> System.out.println(t.getTitle() + " - Due: " + t.getDueDate()));
 
         // Retrieve a specific task by id
         Task retrievedTask = taskService.getTaskById(2);
