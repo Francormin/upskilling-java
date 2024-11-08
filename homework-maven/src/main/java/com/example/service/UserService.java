@@ -1,33 +1,79 @@
 package com.example.service;
 
+import com.example.dto.UserDTO;
+import com.example.exception.ResourceNotFoundCustomException;
 import com.example.model.User;
 import com.example.repository.UserRepository;
 
-import java.util.List;
-import java.util.Optional;
+import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Service
 public class UserService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public List<User> getAll() {
-        return userRepository.getAll();
+    // No es necesario @Autowired, ya que la clase posee un solo constructor
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
-    public Optional<User> getById(Long id) {
-        return userRepository.getById(id);
+    // Convierte un User en un UserDTO
+    private UserDTO convertToDTO(User user) {
+        UserDTO userDTO = new UserDTO();
+        userDTO.setName(user.getName());
+        userDTO.setSurname(user.getSurname());
+        userDTO.setEmail(user.getEmail());
+        userDTO.setAge(user.getAge());
+        return userDTO;
     }
 
-    public void create(User user) {
-        userRepository.create(user);
+    // Convierte un UserDTO en un User
+    private User convertToEntity(UserDTO userDTO) {
+        User user = new User();
+        user.setName(userDTO.getName());
+        user.setSurname(userDTO.getSurname());
+        user.setEmail(userDTO.getEmail());
+        user.setAge(userDTO.getAge());
+        return user;
     }
 
-    public void update(Long id, User userDetails) {
-        userRepository.update(id, userDetails);
+    public List<UserDTO> getAll() {
+        return userRepository.findAll().stream()
+            .map(this::convertToDTO)
+            .toList();
+    }
+
+    public UserDTO getById(Long id) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundCustomException("user not found")
+        );
+        return convertToDTO(user);
+    }
+
+    public UserDTO create(UserDTO userDTO) {
+        User user = convertToEntity(userDTO);
+        User savedUser = userRepository.save(user);
+        return convertToDTO(savedUser);
+    }
+
+    public void update(Long id, UserDTO userDTO) {
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundCustomException("user not found")
+        );
+        user.setName(userDTO.getName());
+        user.setSurname(userDTO.getSurname());
+        user.setEmail(userDTO.getEmail());
+        user.setAge(userDTO.getAge());
+        userRepository.save(user);
     }
 
     public void delete(Long id) {
-        userRepository.delete(id);
+        User user = userRepository.findById(id).orElseThrow(
+            () -> new ResourceNotFoundCustomException("user not found")
+        );
+        userRepository.delete(user);
     }
 
 }
