@@ -20,18 +20,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void addTask(Task task) {
-        taskRepository.save(task);
-        System.out.println("Task added: " + task.getTitle());
+        taskRepository.addTask(task);
     }
 
     @Override
     public Task getTaskById(Integer taskId) {
-        return taskRepository.findById(taskId).orElse(null);
+        return taskRepository.getTaskById(taskId);
     }
 
     @Override
     public List<Task> listTasks() {
-        return taskRepository.findAll();
+        return taskRepository.listTasks();
     }
 
 }
