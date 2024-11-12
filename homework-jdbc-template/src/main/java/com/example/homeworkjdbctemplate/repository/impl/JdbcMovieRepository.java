@@ -6,9 +6,13 @@ import com.example.homeworkjdbctemplate.repository.MovieRepository;
 
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -45,14 +49,30 @@ public class JdbcMovieRepository implements MovieRepository {
             .findFirst();
     }
 
+    /**
+     * <p>KeyHolder: GeneratedKeyHolder captures the generated ID after insertion.
+     * <p>Auto-Generated Column: The new String[] {"id"} tells the database that the id column
+     * will auto-generate the key, which KeyHolder will store.
+     * <p>Return the Movie Object: After the insert, set the generated ID on the movie object
+     * and return it.
+     */
     @Override
-    public int save(Movie movie) {
-        return jdbcTemplate.update(
-            MovieSqlQueries.CREATE,
-            movie.getTitle(),
-            movie.getDirector(),
-            movie.getReleaseYear()
-        );
+    public Movie save(Movie movie) {
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement ps = connection.prepareStatement(
+                MovieSqlQueries.CREATE,
+                new String[]{"id"}
+            );
+            ps.setString(1, movie.getTitle());
+            ps.setString(2, movie.getDirector());
+            ps.setInt(3, movie.getReleaseYear());
+            return ps;
+        }, keyHolder);
+
+        movie.setId(Objects.requireNonNull(keyHolder.getKey()).longValue());
+        return movie;
     }
 
     @Override

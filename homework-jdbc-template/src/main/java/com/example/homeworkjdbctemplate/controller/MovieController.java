@@ -3,6 +3,7 @@ package com.example.homeworkjdbctemplate.controller;
 import com.example.homeworkjdbctemplate.model.Movie;
 import com.example.homeworkjdbctemplate.service.MovieService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -46,12 +49,31 @@ public class MovieController {
             .orElse(ResponseEntity.notFound().build());
     }
 
+    /**
+     * Build URI with ServletUriComponentsBuilder:
+     * <p><ul>
+     * <li>fromCurrentRequest() gets the base URI of the current request (e.g., /movies).
+     * <li>path("/{id}") appends the /{id} path to the URI.
+     * <li>buildAndExpand(createdMovie.getId()) replaces {id} with the actual ID of the new movie.
+     * <li>toUri() converts it to a URI object.
+     * </ul><p>
+     * <p>
+     * Return ResponseEntity.created(location).body(createdMovie):
+     * <p><ul>
+     * <li>created(location) sets the 201 Created status and adds the Location header.
+     * <li>.body(createdMovie) includes the new Movie object in the response body.
+     * </ul><p>
+     */
     @PostMapping
-    public ResponseEntity<String> create(@RequestBody Movie movie) {
-        int result = movieService.create(movie);
-        return result > 0
-            ? ResponseEntity.ok("Movie created successfully.")
-            : ResponseEntity.status(500).body("Failed to create movie.");
+    public ResponseEntity<Movie> create(@RequestBody Movie movie) {
+        Movie createdMovie = movieService.create(movie);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+            .path("/get/{id}")
+            .buildAndExpand(createdMovie.getId())
+            .toUri();
+
+        return ResponseEntity.created(location).body(createdMovie);
     }
 
     @PutMapping("/{id}")
@@ -59,16 +81,16 @@ public class MovieController {
         movie.setId(id);
         int result = movieService.update(id, movie);
         return result > 0
-            ? ResponseEntity.ok("Movie updated successfully.")
-            : ResponseEntity.status(404).body("Movie with ID " + id + " not found.");
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         int result = movieService.delete(id);
         return result > 0
-            ? ResponseEntity.ok("Movie deleted successfully.")
-            : ResponseEntity.status(404).body("Movie with ID " + id + " not found.");
+            ? ResponseEntity.noContent().build()
+            : ResponseEntity.notFound().build();
     }
 
 }

@@ -13,7 +13,7 @@ public interface MovieService {
 
     Optional<Movie> getByTitle(String title);
 
-    int create(Movie movie);
+    Movie create(Movie movie);
 
     int update(Long id, Movie movie);
 

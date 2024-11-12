@@ -13,7 +13,7 @@ public interface MovieRepository {
 
     Optional<Movie> findByTitle(String title);
 
-    int save(Movie movie);
+    Movie save(Movie movie);
 
     int update(Long id, Movie movie);
 

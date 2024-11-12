@@ -34,7 +34,7 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public int create(Movie movie) {
+    public Movie create(Movie movie) {
         return movieRepository.save(movie);
     }
 
