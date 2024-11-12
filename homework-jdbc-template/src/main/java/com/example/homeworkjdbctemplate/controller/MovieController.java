@@ -52,8 +52,8 @@ public class MovieController {
     /**
      * Build URI with ServletUriComponentsBuilder:
      * <p><ul>
-     * <li>fromCurrentRequest() gets the base URI of the current request (e.g., /movies).
-     * <li>path("/{id}") appends the /{id} path to the URI.
+     * <li>fromCurrentRequest() gets the base URI of the current request (/api/v1/movies).
+     * <li>path("/get/{id}") appends the /get/{id} path to the URI.
      * <li>buildAndExpand(createdMovie.getId()) replaces {id} with the actual ID of the new movie.
      * <li>toUri() converts it to a URI object.
      * </ul><p>
@@ -61,7 +61,7 @@ public class MovieController {
      * Return ResponseEntity.created(location).body(createdMovie):
      * <p><ul>
      * <li>created(location) sets the 201 Created status and adds the Location header.
-     * <li>.body(createdMovie) includes the new Movie object in the response body.
+     * <li>body(createdMovie) includes the new Movie object in the response body.
      * </ul><p>
      */
     @PostMapping
