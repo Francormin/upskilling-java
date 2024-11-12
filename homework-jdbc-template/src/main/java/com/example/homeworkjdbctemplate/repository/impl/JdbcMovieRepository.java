@@ -26,13 +26,13 @@ public class JdbcMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findAll() {
-        return jdbcTemplate.query(MovieSqlQueries.GET_ALL, new BeanPropertyRowMapper<>(Movie.class));
+        return jdbcTemplate.query(MovieSqlQueries.SELECT_ALL, new BeanPropertyRowMapper<>(Movie.class));
     }
 
     @Override
     public Optional<Movie> findById(Long id) {
         return jdbcTemplate.query(
-                MovieSqlQueries.GET_BY_ID,
+                MovieSqlQueries.SELECT_BY_ID,
                 new BeanPropertyRowMapper<>(Movie.class),
                 id)
             .stream()
@@ -42,7 +42,7 @@ public class JdbcMovieRepository implements MovieRepository {
     @Override
     public Optional<Movie> findByTitle(String title) {
         return jdbcTemplate.query(
-                MovieSqlQueries.GET_BY_TITLE,
+                MovieSqlQueries.SELECT_BY_TITLE,
                 new BeanPropertyRowMapper<>(Movie.class),
                 title)
             .stream()
@@ -62,7 +62,7 @@ public class JdbcMovieRepository implements MovieRepository {
 
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(
-                MovieSqlQueries.CREATE,
+                MovieSqlQueries.INSERT,
                 new String[]{"id"}
             );
             ps.setString(1, movie.getTitle());
