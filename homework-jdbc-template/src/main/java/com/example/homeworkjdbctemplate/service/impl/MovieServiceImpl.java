@@ -1,5 +1,6 @@
 package com.example.homeworkjdbctemplate.service.impl;
 
+import com.example.homeworkjdbctemplate.dto.MovieDto;
 import com.example.homeworkjdbctemplate.model.Movie;
 import com.example.homeworkjdbctemplate.repository.MovieRepository;
 import com.example.homeworkjdbctemplate.service.MovieService;
@@ -18,29 +19,58 @@ public class MovieServiceImpl implements MovieService {
         this.movieRepository = movieRepository;
     }
 
-    @Override
-    public List<Movie> getAll() {
-        return movieRepository.findAll();
+    private MovieDto fromMovieToMovieDto(Movie movie) {
+        return new MovieDto(
+            movie.getTitle(),
+            movie.getDirector(),
+            movie.getReleaseYear()
+        );
+    }
+
+    private Movie fromMovieDtoToMovie(MovieDto movieDto) {
+        return new Movie(
+            movieDto.getTitle(),
+            movieDto.getDirector(),
+            movieDto.getReleaseYear()
+        );
     }
 
     @Override
-    public Optional<Movie> getById(Long id) {
-        return movieRepository.findById(id);
+    public List<MovieDto> getAll() {
+        List<Movie> movies = movieRepository.findAll();
+        return !movies.isEmpty()
+            ? movies.stream()
+                .map(this::fromMovieToMovieDto)
+                .toList()
+            : List.of();
     }
 
     @Override
-    public Optional<Movie> getByTitle(String title) {
-        return movieRepository.findByTitle(title);
+    public MovieDto getById(Long id) {
+        Optional<Movie> movieFound = movieRepository.findById(id);
+        return movieFound.map(this::fromMovieToMovieDto).orElse(null);
     }
 
     @Override
-    public Movie create(Movie movie) {
-        return movieRepository.save(movie);
+    public MovieDto getByTitle(String title) {
+        Optional<Movie> movieFound = movieRepository.findByTitle(title);
+        return movieFound.map(this::fromMovieToMovieDto).orElse(null);
     }
 
     @Override
-    public int update(Long id, Movie movie) {
-        return movieRepository.update(id, movie);
+    public Object[] create(MovieDto movieDto) {
+        Movie movieToSave = fromMovieDtoToMovie(movieDto);
+        Movie movieCreated = movieRepository.save(movieToSave);
+        return new Object[]{
+            fromMovieToMovieDto(movieCreated),
+            movieCreated.getId()
+        };
+    }
+
+    @Override
+    public int update(Long id, MovieDto movieDto) {
+        Movie movieToUpdate = fromMovieDtoToMovie(movieDto);
+        return movieRepository.update(id, movieToUpdate);
     }
 
     @Override
