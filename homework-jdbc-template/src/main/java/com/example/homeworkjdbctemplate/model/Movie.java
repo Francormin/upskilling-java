@@ -10,6 +10,12 @@ public class Movie {
     public Movie() {
     }
 
+    public Movie(String title, String director, Integer releaseYear) {
+        this.title = title;
+        this.director = director;
+        this.releaseYear = releaseYear;
+    }
+
     public Movie(Long id, String title, String director, Integer releaseYear) {
         this.id = id;
         this.title = title;
