@@ -1,21 +1,21 @@
 package com.example.homeworkjdbctemplate.service;
 
+import com.example.homeworkjdbctemplate.dto.MovieDto;
 import com.example.homeworkjdbctemplate.model.Movie;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface MovieService {
 
-    List<Movie> getAll();
+    List<MovieDto> getAll();
 
-    Optional<Movie> getById(Long id);
+    MovieDto getById(Long id);
 
-    Optional<Movie> getByTitle(String title);
+    MovieDto getByTitle(String title);
 
-    Movie create(Movie movie);
+    Object[] create(MovieDto movieDto);
 
-    int update(Long id, Movie movie);
+    int update(Long id, MovieDto movieDto);
 
     int delete(Long id);
 
