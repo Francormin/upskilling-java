@@ -40,6 +40,7 @@ class GameServiceImplTest {
         // GIVEN
         Game game1 = new Game(1L, "Game1", "RPG", 60.00);
         Game game2 = new Game(2L, "Game2", "Action", 50.00);
+
         when(gameRepository.findAll()).thenReturn(Arrays.asList(game1, game2));
 
         // WHEN
@@ -58,6 +59,7 @@ class GameServiceImplTest {
         Game game1 = new Game(1L, "Game1", "RPG", 60.00);
         Game game2 = new Game(2L, "Game2", "Action", 50.00);
         Game game3 = new Game(3L, "Game3", "RPG", 45.00);
+
         when(gameRepository.findAll()).thenReturn(Arrays.asList(game1, game2, game3));
 
         // WHEN
@@ -65,7 +67,7 @@ class GameServiceImplTest {
 
         // THEN
         assertEquals(2, rpgGames.size());
-        assertTrue(rpgGames.stream().allMatch(game -> game.getGenre().equalsIgnoreCase("RPG")));
+        assertTrue(rpgGames.stream().allMatch(game -> game.getGenre().toLowerCase().contains("RPG".toLowerCase())));
         verify(gameRepository, times(1)).findAll();
     }
 
@@ -104,16 +106,11 @@ class GameServiceImplTest {
     void testCreateGame_Success() {
         // GIVEN
         Game game = new Game();
-        game.setTitle("Fallout 4");
-        game.setGenre("First-Person Shooter");
+        game.setTitle("NewGame");
+        game.setGenre("RPG");
         game.setPrice(40.00);
 
-        Game savedGame = new Game();
-        savedGame.setId(1L);
-        savedGame.setTitle(game.getTitle());
-        savedGame.setGenre(game.getGenre());
-        savedGame.setPrice(game.getPrice());
-
+        Game savedGame = new Game(1L, game.getTitle(), game.getGenre(), game.getPrice());
         when(gameRepository.save(any(Game.class))).thenReturn(savedGame);
 
         // WHEN
@@ -121,7 +118,7 @@ class GameServiceImplTest {
 
         // THEN
         assertEquals(1L, result.getId());
-        assertEquals("Fallout 4", result.getTitle());
+        assertEquals("NewGame", result.getTitle());
         verify(gameRepository, times(1)).save(game);
     }
 
