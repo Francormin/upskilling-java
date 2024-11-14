@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    driverClassName: org.h2.Driver
+    password: ""
+    platform: h2
+    url: jdbc:h2:mem:games
+    username: sa
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
