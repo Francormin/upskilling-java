@@ -1,5 +1,10 @@
 package com.example.demosingleton;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+
+@Component // Para especificarle a Spring que debe tratar a esta clase como un Bean
+@Scope("singleton") // Por defecto, el scope de los beans que Spring administra es Singleton
 public class MiSingleton {
 
     // Instancia única de la clase
