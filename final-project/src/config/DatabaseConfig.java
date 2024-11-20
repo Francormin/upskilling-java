@@ -27,37 +27,38 @@ public class DatabaseConfig {
         try {
             Statement stmt = conn.createStatement();
 
-            String GET_DATA = "SELECT * FROM expenses";
-            ResultSet rs = stmt.executeQuery(GET_DATA);
+            String GET_TABLE = "SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'EXPENSES'";
+            ResultSet rs = stmt.executeQuery(GET_TABLE);
 
             if (rs.next()) {
-                return;
+                stmt.close();
+                rs.close();
             } else {
-                String CREATE_EXPENSES_TABLE = "CREATE TABLE IF NOT EXISTS expenses (" +
-                    "id INT AUTO_INCREMENT PRIMARY KEY," +
-                    " amount DOUBLE PRECISION NOT NULL," +
-                    " date VARCHAR(255)," +
-                    " expense_category VARCHAR(1024)," +
-                    " description VARCHAR(255)" +
-                    ")";
+                String CREATE_EXPENSES_TABLE = "CREATE TABLE expenses (" +
+                        "id INT AUTO_INCREMENT PRIMARY KEY," +
+                        " amount DOUBLE PRECISION NOT NULL," +
+                        " date VARCHAR(255)," +
+                        " expense_category VARCHAR(1024)," +
+                        " description VARCHAR(255)" +
+                        ")";
                 stmt.executeUpdate(CREATE_EXPENSES_TABLE);
 
                 // Serializar el objeto ExpenseCategory antes de insertarlo
                 ExpenseCategory groceriesCategory = new ExpenseCategory(
-                    "Groceries",
-                    "Expenses for groceries"
+                        "Groceries",
+                        "Expenses for groceries"
                 );
                 ExpenseCategory supermarketCategory = new ExpenseCategory(
-                    "Supermarket",
-                    "Expenses for supermarket items"
+                        "Supermarket",
+                        "Expenses for supermarket items"
                 );
 
                 String groceriesJson = ExpenseCategorySerializer.serialize(groceriesCategory);
                 String supermarketJson = ExpenseCategorySerializer.serialize(supermarketCategory);
 
                 String INSERT_NEW_EXPENSES = "INSERT INTO expenses (amount, date, expense_category, description)" +
-                    " VALUES (24.99, '20/05/2024', '" + groceriesJson + "', 'groceries')," +
-                    " (19.99, '15/05/2024', '" + supermarketJson + "', 'supermarket')";
+                        " VALUES (24.99, '20/05/2024', '" + groceriesJson + "', 'groceries')," +
+                        " (19.99, '15/05/2024', '" + supermarketJson + "', 'supermarket')";
                 stmt.executeUpdate(INSERT_NEW_EXPENSES);
 
                 stmt.close();
