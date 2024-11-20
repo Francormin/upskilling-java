@@ -5,7 +5,6 @@ import exceptions.InvalidExpenseAmountException;
 import java.util.Optional;
 
 public class Expense {
-    private static Integer counter = 0;
     private Integer id;
     private Double amount;
     private String date;
@@ -23,7 +22,6 @@ public class Expense {
         if (amount <= 0) {
             throw new InvalidExpenseAmountException("The expense amount must be greater than zero.");
         }
-        this.id = ++counter;
         this.amount = amount;
         this.date = date;
         this.expenseCategory = expenseCategory;
@@ -38,6 +36,18 @@ public class Expense {
 
         this(amount, date, expenseCategory);
         this.description = description.toLowerCase();
+
+    }
+
+    public Expense(
+            int id,
+            Double amount,
+            String date,
+            ExpenseCategory expenseCategory,
+            String description) throws InvalidExpenseAmountException {
+
+        this(amount, date, expenseCategory, description);
+        this.id = id;
 
     }
 
