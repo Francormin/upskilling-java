@@ -12,6 +12,11 @@ public class Expense {
     private String description;
 
     public Expense() {
+
+    }
+
+    public Expense(ExpenseCategory expenseCategory) {
+        this.expenseCategory = expenseCategory;
     }
 
     public Expense(
@@ -19,12 +24,12 @@ public class Expense {
             String date,
             ExpenseCategory expenseCategory) throws InvalidExpenseAmountException {
 
+        this(expenseCategory);
         if (amount <= 0) {
             throw new InvalidExpenseAmountException("The expense amount must be greater than zero.");
         }
         this.amount = amount;
         this.date = date;
-        this.expenseCategory = expenseCategory;
 
     }
 
