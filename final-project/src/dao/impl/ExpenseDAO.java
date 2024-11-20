@@ -54,7 +54,8 @@ public class ExpenseDAO implements DAO<Expense> {
 
     @Override
     public Expense getById(int id) {
-        Expense expense = new Expense();
+        ExpenseCategory expenseCategory = new ExpenseCategory();
+        Expense expense = new Expense(expenseCategory);
 
         try {
             PreparedStatement ps = conn.prepareStatement("SELECT * FROM expenses WHERE id = ?");
