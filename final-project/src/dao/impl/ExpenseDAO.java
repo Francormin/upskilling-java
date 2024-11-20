@@ -1,6 +1,7 @@
 package dao.impl;
 
 import config.DatabaseConfig;
+import config.ExpenseCategorySerializer;
 import dao.DAO;
 import entities.Expense;
 import entities.ExpenseCategory;
@@ -26,18 +27,19 @@ public class ExpenseDAO implements DAO<Expense> {
 
         try {
             PreparedStatement ps = conn.prepareStatement(
-                "SELECT * FROM expenses"
+                    "SELECT * FROM expenses"
             );
 
             ResultSet rs = ps.executeQuery();
 
             while (rs.next()) {
+                int id = rs.getInt("id");
                 Double amount = rs.getDouble("amount");
                 String date = rs.getString("date");
-                ExpenseCategory expenseCategory = (ExpenseCategory) rs.getObject("expense_category");
+                ExpenseCategory expenseCategory = ExpenseCategorySerializer.deserialize(rs.getString("expense_category"));
                 String description = rs.getString("description");
 
-                Expense expense = new Expense(amount, date, expenseCategory, description);
+                Expense expense = new Expense(id, amount, date, expenseCategory, description);
                 expenses.add(expense);
             }
 
@@ -52,7 +54,31 @@ public class ExpenseDAO implements DAO<Expense> {
 
     @Override
     public Expense getById(int id) {
-        return null;
+        Expense expense = new Expense();
+
+        try {
+            PreparedStatement ps = conn.prepareStatement(
+                    "SELECT * FROM expenses WHERE id = ?"
+            );
+
+            ps.setInt(1, id);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                expense.setId(rs.getInt("id"));
+                expense.setAmount(rs.getDouble("amount"));
+                expense.setDate(rs.getString("date"));
+                expense.setCategory(ExpenseCategorySerializer.deserialize(rs.getString("expense_category")));
+                expense.setDescription(rs.getString("description"));
+            }
+
+            rs.close();
+            ps.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+
+        return expense;
     }
 
     @Override
@@ -65,7 +91,7 @@ public class ExpenseDAO implements DAO<Expense> {
 
         try {
             PreparedStatement ps = conn.prepareStatement(
-                "INSERT INTO expenses (amount, date, expense_category, description) VALUES (?, ?, ?, ?)"
+                    "INSERT INTO expenses (amount, date, expense_category, description) VALUES (?, ?, ?, ?)"
             );
 
             ps.setDouble(1, newExpense.getAmount());
@@ -85,7 +111,7 @@ public class ExpenseDAO implements DAO<Expense> {
     public void update(int id, Expense expense) {
         try {
             PreparedStatement ps = conn.prepareStatement(
-                "UPDATE expenses SET amount = ?, date = ?, expense_category = ?, description = ? WHERE id = ?"
+                    "UPDATE expenses SET amount = ?, date = ?, expense_category = ?, description = ? WHERE id = ?"
             );
 
             ps.setDouble(1, expense.getAmount());
@@ -110,7 +136,7 @@ public class ExpenseDAO implements DAO<Expense> {
     public void delete(int id) {
         try {
             PreparedStatement ps = conn.prepareStatement(
-                "DELETE FROM expenses WHERE id = ?"
+                    "DELETE FROM expenses WHERE id = ?"
             );
 
             ps.setInt(1, id);
