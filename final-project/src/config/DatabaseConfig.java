@@ -14,23 +14,23 @@ public class DatabaseConfig {
     private static final String PASSWORD = "";
 
     public static Connection getDatabaseConnection() {
-        Connection connection = null;
+        Connection conn = null;
         try {
-            connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
+            conn = DriverManager.getConnection(URL, USERNAME, PASSWORD);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return connection;
+        return conn;
     }
 
     public static void populateDatabase(Connection conn) {
         try {
-            Statement statement = conn.createStatement();
+            Statement stmt = conn.createStatement();
 
             String GET_DATA = "SELECT * FROM expenses";
-            ResultSet resultSet = statement.executeQuery(GET_DATA);
+            ResultSet rs = stmt.executeQuery(GET_DATA);
 
-            if (resultSet.next()) {
+            if (rs.next()) {
                 return;
             } else {
                 String CREATE_EXPENSES_TABLE = "CREATE TABLE IF NOT EXISTS expenses (" +
@@ -40,7 +40,7 @@ public class DatabaseConfig {
                     " expense_category VARCHAR(1024)," +
                     " description VARCHAR(255)" +
                     ")";
-                statement.executeUpdate(CREATE_EXPENSES_TABLE);
+                stmt.executeUpdate(CREATE_EXPENSES_TABLE);
 
                 // Serializar el objeto ExpenseCategory antes de insertarlo
                 ExpenseCategory groceriesCategory = new ExpenseCategory(
@@ -58,9 +58,9 @@ public class DatabaseConfig {
                 String INSERT_NEW_EXPENSES = "INSERT INTO expenses (amount, date, expense_category, description)" +
                     " VALUES (24.99, '20/05/2024', '" + groceriesJson + "', 'groceries')," +
                     " (19.99, '15/05/2024', '" + supermarketJson + "', 'supermarket')";
-                statement.executeUpdate(INSERT_NEW_EXPENSES);
+                stmt.executeUpdate(INSERT_NEW_EXPENSES);
 
-                statement.close();
+                stmt.close();
                 conn.close();
                 System.out.println("Registros insertados con éxito en la tabla 'expenses'.");
             }
