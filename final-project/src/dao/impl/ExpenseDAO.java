@@ -26,9 +26,7 @@ public class ExpenseDAO implements DAO<Expense> {
         List<Expense> expenses = new ArrayList<>();
 
         try {
-            PreparedStatement ps = conn.prepareStatement(
-                    "SELECT * FROM expenses"
-            );
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM expenses");
 
             ResultSet rs = ps.executeQuery();
 
@@ -36,7 +34,9 @@ public class ExpenseDAO implements DAO<Expense> {
                 int id = rs.getInt("id");
                 Double amount = rs.getDouble("amount");
                 String date = rs.getString("date");
-                ExpenseCategory expenseCategory = ExpenseCategorySerializer.deserialize(rs.getString("expense_category"));
+                ExpenseCategory expenseCategory = ExpenseCategorySerializer.deserialize(
+                        rs.getString("expense_category")
+                );
                 String description = rs.getString("description");
 
                 Expense expense = new Expense(id, amount, date, expenseCategory, description);
@@ -57,9 +57,7 @@ public class ExpenseDAO implements DAO<Expense> {
         Expense expense = new Expense();
 
         try {
-            PreparedStatement ps = conn.prepareStatement(
-                    "SELECT * FROM expenses WHERE id = ?"
-            );
+            PreparedStatement ps = conn.prepareStatement("SELECT * FROM expenses WHERE id = ?");
 
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
@@ -68,7 +66,9 @@ public class ExpenseDAO implements DAO<Expense> {
                 expense.setId(rs.getInt("id"));
                 expense.setAmount(rs.getDouble("amount"));
                 expense.setDate(rs.getString("date"));
-                expense.setCategory(ExpenseCategorySerializer.deserialize(rs.getString("expense_category")));
+                expense.setCategory(ExpenseCategorySerializer.deserialize(
+                        rs.getString("expense_category")
+                ));
                 expense.setDescription(rs.getString("description"));
             }
 
@@ -135,9 +135,7 @@ public class ExpenseDAO implements DAO<Expense> {
     @Override
     public void delete(int id) {
         try {
-            PreparedStatement ps = conn.prepareStatement(
-                    "DELETE FROM expenses WHERE id = ?"
-            );
+            PreparedStatement ps = conn.prepareStatement("DELETE FROM expenses WHERE id = ?");
 
             ps.setInt(1, id);
             int intReturned = ps.executeUpdate();
