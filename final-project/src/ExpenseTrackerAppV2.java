@@ -99,7 +99,7 @@ public class ExpenseTrackerAppV2 {
     }
 
     private static double requestExpenseAmount(Scanner scanner, ExpenseAmountValidator validator, int index) {
-        double expenseAmount = 0;
+        double expenseAmount;
 
         while (true) {
             try {
@@ -180,10 +180,12 @@ public class ExpenseTrackerAppV2 {
 
     private static Map<String, Integer> countExpenseCategories(Expense[] expenses) {
         Map<String, Integer> categoryCounter = new HashMap<>();
+
         for (Expense expense : expenses) {
             String categoryName = expense.getCategory().getName();
             categoryCounter.put(categoryName, categoryCounter.getOrDefault(categoryName, 0) + 1);
         }
+
         return categoryCounter;
     }
 

@@ -113,7 +113,7 @@ public class ExpenseTrackerAppV3 {
     }
 
     private static double requestExpenseAmount(Scanner scanner, ExpenseAmountValidator validator) {
-        double expenseAmount = 0;
+        double expenseAmount;
 
         while (true) {
             try {
