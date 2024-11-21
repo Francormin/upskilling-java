@@ -48,6 +48,13 @@ public class ExpenseTrackerAppV4 {
             }
 
             requestExpenseIdToSearchForIt(scanner, expenseService);
+            requestExpenseIdToUpdateIt(
+                    scanner,
+                    expenseAmountValidator,
+                    expenseDateValidator,
+                    expenseDescriptionValidator,
+                    expenseService
+            );
         } catch (InvalidCutLogicVarException e) {
             System.err.println(e.getMessage());
         }
@@ -230,7 +237,7 @@ public class ExpenseTrackerAppV4 {
 
     private static boolean askToRetry(Scanner scanner) {
         while (true) {
-            System.out.print("\n¿Desea intentar buscar un gasto nuevamente? TRUE / FALSE: ");
+            System.out.print("\n¿Desea intentarlo nuevamente? TRUE / FALSE: ");
             try {
                 boolean retry = scanner.nextBoolean();
                 scanner.nextLine();
@@ -240,5 +247,80 @@ public class ExpenseTrackerAppV4 {
                 scanner.nextLine();
             }
         }
+    }
+
+    private static void requestExpenseIdToUpdateIt(
+            Scanner scanner,
+            ExpenseAmountValidator amountValidator,
+            ExpenseDateValidator dateValidator,
+            ExpenseDescriptionValidator descriptionValidator,
+            Service<Expense> expenseService) {
+
+        boolean continueSearch;
+
+        do {
+
+            System.out.print("\n¿Desea actualizar un gasto? TRUE / FALSE: ");
+            try {
+                continueSearch = scanner.nextBoolean();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
+                scanner.nextLine();
+                continue;
+            }
+
+            while (continueSearch) {
+
+                System.out.print("\nIngrese el id del gasto: ");
+                try {
+                    int expenseId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (expenseId <= 0) {
+                        NotificationUtils.showOnError("El id del gasto debe ser un número entero mayor a 0.");
+                    } else {
+                        Expense expenseToUpdate = expenseService.getById(expenseId);
+
+                        if (expenseToUpdate.getId() != null) {
+                            Expense newExpense = new Expense();
+                            ExpenseCategory expenseCategory = new ExpenseCategory();
+
+                            double newExpenseAmount = requestExpenseAmount(scanner, amountValidator);
+                            String newExpenseCategory = requestExpenseCategory(scanner);
+                            String newExpenseDate = requestExpenseDate(scanner, dateValidator);
+                            String newExpenseDescription = requestExpenseDescription(scanner, descriptionValidator);
+
+                            newExpense.setAmount(newExpenseAmount);
+                            expenseCategory.setName(newExpenseCategory);
+                            newExpense.setCategory(expenseCategory);
+                            newExpense.setDate(newExpenseDate);
+                            newExpense.setDescription(newExpenseDescription);
+                            newExpense.setId(expenseToUpdate.getId());
+
+                            expenseService.update(expenseToUpdate.getId(), newExpense);
+                        } else {
+                            NotificationUtils.showOnError("Gasto no encontrado.");
+                        }
+                    }
+                } catch (InputMismatchException e) {
+                    NotificationUtils.showOnError("El valor ingresado no es un número válido.");
+                    scanner.nextLine();
+                }
+
+                System.out.print("\n¿Desea actualizar otro gasto? TRUE / FALSE: ");
+                try {
+                    continueSearch = scanner.nextBoolean();
+                    scanner.nextLine();
+                } catch (InputMismatchException e) {
+                    NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
+                    scanner.nextLine();
+                    continueSearch = false;
+                }
+
+            }
+
+        } while (askToRetry(scanner));
+
     }
 }
