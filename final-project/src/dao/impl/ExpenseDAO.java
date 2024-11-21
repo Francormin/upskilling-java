@@ -85,21 +85,15 @@ public class ExpenseDAO implements DAO<Expense> {
 
     @Override
     public void add(Expense expense) {
-        Expense newExpense = new Expense();
-        newExpense.setAmount(expense.getAmount());
-        newExpense.setDate(expense.getDate());
-        newExpense.setCategory(expense.getCategory());
-        newExpense.setDescription(expense.getDescription());
-
         try {
             PreparedStatement ps = conn.prepareStatement(
                     "INSERT INTO expenses (amount, date, expense_category, description) VALUES (?, ?, ?, ?)"
             );
 
-            ps.setDouble(1, newExpense.getAmount());
-            ps.setString(2, newExpense.getDate());
-            ps.setString(3, ExpenseCategorySerializer.serialize(newExpense.getCategory()));
-            ps.setString(4, newExpense.getDescription());
+            ps.setDouble(1, expense.getAmount());
+            ps.setString(2, expense.getDate());
+            ps.setString(3, ExpenseCategorySerializer.serialize(expense.getCategory()));
+            ps.setString(4, expense.getDescription());
             ps.executeUpdate();
 
             ps.close();
@@ -118,7 +112,7 @@ public class ExpenseDAO implements DAO<Expense> {
 
             ps.setDouble(1, expense.getAmount());
             ps.setString(2, expense.getDate());
-            ps.setObject(3, expense.getCategory());
+            ps.setObject(3, ExpenseCategorySerializer.serialize(expense.getCategory()));
             ps.setString(4, expense.getDescription());
             ps.setInt(5, id);
             int intReturned = ps.executeUpdate();
