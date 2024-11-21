@@ -87,7 +87,7 @@ public class ExpenseTrackerAppV4 {
                 cutLogicVar = scanner.nextBoolean();
             }
         } catch (InputMismatchException e) {
-            throw new InvalidCutLogicVarException("El valor a ingresar debe ser 'true' o 'false'");
+            throw new InvalidCutLogicVarException("El valor a ingresar debe ser 'true' o 'false'.");
         }
 
     }
@@ -102,10 +102,10 @@ public class ExpenseTrackerAppV4 {
                 validator.validateAmount(expenseAmount);
                 break;
             } catch (InputMismatchException e) {
-                NotificationUtils.showError("El valor ingresado no es un número válido.");
+                NotificationUtils.showOnError("El valor ingresado no es un número válido.");
                 scanner.next();
             } catch (InvalidExpenseAmountException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
 
@@ -117,15 +117,17 @@ public class ExpenseTrackerAppV4 {
         String expenseCategoryName;
 
         while (true) {
-            System.out.print("Ingrese la categoría del gasto: ");
+            System.out.print("\nIngrese la categoría del gasto: ");
             expenseCategoryName = scanner.nextLine().toLowerCase().trim();
 
             if (ValidationUtils.isBlank(expenseCategoryName)) {
-                NotificationUtils.showError("El nombre de la categoría no puede estar vacío.");
-            } else if (ValidationUtils.isValidExpenseCategoryName(expenseCategoryName)) {
-                return expenseCategoryName;
+                NotificationUtils.showOnError("El nombre de la categoría no puede estar vacío.");
+            } else if (!ValidationUtils.isValidExpenseCategoryName(expenseCategoryName)) {
+                NotificationUtils.showOnError("El nombre de la categoría solo puede contener letras.");
+            } else if (ValidationUtils.isShort(expenseCategoryName)) {
+                NotificationUtils.showOnError("El nombre de la categoría debe tener al menos tres letras.");
             } else {
-                NotificationUtils.showError("El nombre de la categoría solo puede contener letras.");
+                return expenseCategoryName;
             }
         }
     }
@@ -134,11 +136,11 @@ public class ExpenseTrackerAppV4 {
         String expenseDate;
 
         while (true) {
-            System.out.print("Ingrese la fecha del gasto (dd/MM/yyyy): ");
+            System.out.print("\nIngrese la fecha del gasto (dd/MM/yyyy): ");
             expenseDate = scanner.nextLine().trim();
 
             if (ValidationUtils.isBlank(expenseDate)) {
-                NotificationUtils.showError("La fecha no puede estar vacía.");
+                NotificationUtils.showOnError("La fecha no puede estar vacía.");
                 continue;
             }
 
@@ -146,7 +148,7 @@ public class ExpenseTrackerAppV4 {
                 validator.validateDate(expenseDate);
                 return expenseDate;
             } catch (InvalidExpenseDateException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
     }
@@ -155,11 +157,11 @@ public class ExpenseTrackerAppV4 {
         String expenseDescription;
 
         while (true) {
-            System.out.print("Ingrese la descripción del gasto: ");
+            System.out.print("\nIngrese la descripción del gasto: ");
             expenseDescription = scanner.nextLine().trim();
 
             if (ValidationUtils.isBlank(expenseDescription)) {
-                NotificationUtils.showError("La descripción no puede estar vacía.");
+                NotificationUtils.showOnError("La descripción no puede estar vacía.");
                 continue;
             }
 
@@ -167,7 +169,7 @@ public class ExpenseTrackerAppV4 {
                 validator.validateDescription(expenseDescription);
                 return expenseDescription;
             } catch (InvalidExpenseDescriptionException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
     }
@@ -182,7 +184,7 @@ public class ExpenseTrackerAppV4 {
                 continueSearch = scanner.nextBoolean();
                 scanner.nextLine();
             } catch (InputMismatchException e) {
-                NotificationUtils.showError("El valor a ingresar debe ser 'true' o 'false'.");
+                NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
                 scanner.nextLine();
                 continue;
             }
@@ -195,18 +197,19 @@ public class ExpenseTrackerAppV4 {
                     scanner.nextLine();
 
                     if (expenseId <= 0) {
-                        NotificationUtils.showError("El id del gasto debe ser un número entero mayor a 0.");
+                        NotificationUtils.showOnError("El id del gasto debe ser un número entero mayor a 0.");
                     } else {
                         Expense expenseToReturn = expenseService.getById(expenseId);
 
                         if (expenseToReturn.getId() != null) {
-                            System.out.println("\nGasto encontrado: " + expenseToReturn);
+                            NotificationUtils.showOnSuccess("Gasto encontrado:");
+                            System.out.println(expenseToReturn);
                         } else {
-                            NotificationUtils.showError("Gasto no encontrado.");
+                            NotificationUtils.showOnError("Gasto no encontrado.");
                         }
                     }
                 } catch (InputMismatchException e) {
-                    NotificationUtils.showError("El valor ingresado no es un número válido.");
+                    NotificationUtils.showOnError("El valor ingresado no es un número válido.");
                     scanner.nextLine();
                 }
 
@@ -215,7 +218,7 @@ public class ExpenseTrackerAppV4 {
                     continueSearch = scanner.nextBoolean();
                     scanner.nextLine();
                 } catch (InputMismatchException e) {
-                    NotificationUtils.showError("El valor a ingresar debe ser 'true' o 'false'.");
+                    NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
                     scanner.nextLine();
                     continueSearch = false;
                 }
@@ -227,17 +230,15 @@ public class ExpenseTrackerAppV4 {
 
     private static boolean askToRetry(Scanner scanner) {
         while (true) {
-
             System.out.print("\n¿Desea intentar buscar un gasto nuevamente? TRUE / FALSE: ");
             try {
                 boolean retry = scanner.nextBoolean();
                 scanner.nextLine();
                 return retry;
             } catch (InputMismatchException e) {
-                NotificationUtils.showError("El valor a ingresar debe ser 'true' o 'false'.");
+                NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
                 scanner.nextLine();
             }
-
         }
     }
 }
