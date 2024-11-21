@@ -80,17 +80,17 @@ public class ExpenseTrackerAppV2 {
             String input = scanner.nextLine().trim();
 
             if (ValidationUtils.isBlank(input)) {
-                NotificationUtils.showError("El valor a ingresar no puede estar vacío.");
+                NotificationUtils.showOnError("El valor a ingresar no puede estar vacío.");
             } else {
                 try {
                     totalExpensesToEnter = ValidationUtils.validateInteger(input);
                     if (totalExpensesToEnter <= 0) {
-                        NotificationUtils.showError("El valor a ingresar debe ser un número entero mayor que cero.");
+                        NotificationUtils.showOnError("El valor a ingresar debe ser un número entero mayor que cero.");
                     } else {
                         isValidInput = true;
                     }
                 } catch (NumberFormatException e) {
-                    NotificationUtils.showError("El valor a ingresar debe ser un número entero.");
+                    NotificationUtils.showOnError("El valor a ingresar debe ser un número entero.");
                 }
             }
         } while (!isValidInput);
@@ -108,10 +108,10 @@ public class ExpenseTrackerAppV2 {
                 validator.validateAmount(expenseAmount);
                 break;
             } catch (InputMismatchException e) {
-                NotificationUtils.showError("El valor ingresado no es un número válido.");
+                NotificationUtils.showOnError("El valor ingresado no es un número válido.");
                 scanner.next();
             } catch (InvalidExpenseAmountException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
 
@@ -127,11 +127,11 @@ public class ExpenseTrackerAppV2 {
             expenseCategoryName = scanner.nextLine().toLowerCase().trim();
 
             if (ValidationUtils.isBlank(expenseCategoryName)) {
-                NotificationUtils.showError("El nombre de la categoría no puede estar vacío.");
+                NotificationUtils.showOnError("El nombre de la categoría no puede estar vacío.");
             } else if (ValidationUtils.isValidExpenseCategoryName(expenseCategoryName)) {
                 return expenseCategoryName;
             } else {
-                NotificationUtils.showError("El nombre de la categoría solo puede contener letras.");
+                NotificationUtils.showOnError("El nombre de la categoría solo puede contener letras.");
             }
         }
     }
@@ -144,7 +144,7 @@ public class ExpenseTrackerAppV2 {
             expenseDate = scanner.nextLine().trim();
 
             if (ValidationUtils.isBlank(expenseDate)) {
-                NotificationUtils.showError("La fecha no puede estar vacía.");
+                NotificationUtils.showOnError("La fecha no puede estar vacía.");
                 continue;
             }
 
@@ -152,7 +152,7 @@ public class ExpenseTrackerAppV2 {
                 validator.validateDate(expenseDate);
                 return expenseDate;
             } catch (InvalidExpenseDateException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
     }
@@ -165,7 +165,7 @@ public class ExpenseTrackerAppV2 {
             expenseDescription = scanner.nextLine().trim();
 
             if (ValidationUtils.isBlank(expenseDescription)) {
-                NotificationUtils.showError("La descripción no puede estar vacía.");
+                NotificationUtils.showOnError("La descripción no puede estar vacía.");
                 continue;
             }
 
@@ -173,7 +173,7 @@ public class ExpenseTrackerAppV2 {
                 validator.validateDescription(expenseDescription);
                 return expenseDescription;
             } catch (InvalidExpenseDescriptionException e) {
-                NotificationUtils.showError(e.getMessage());
+                NotificationUtils.showOnError(e.getMessage());
             }
         }
     }
