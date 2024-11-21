@@ -6,6 +6,7 @@ import dao.DAO;
 import entities.Expense;
 import entities.ExpenseCategory;
 import exceptions.InvalidExpenseAmountException;
+import utils.NotificationUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -97,12 +98,12 @@ public class ExpenseDAO implements DAO<Expense> {
 
             ps.setDouble(1, newExpense.getAmount());
             ps.setString(2, newExpense.getDate());
-            ps.setObject(3, newExpense.getCategory());
+            ps.setString(3, ExpenseCategorySerializer.serialize(newExpense.getCategory()));
             ps.setString(4, newExpense.getDescription());
             ps.executeUpdate();
 
             ps.close();
-            System.out.println("Expense added successfully.");
+            NotificationUtils.showOnSuccess("Gasto agregado exitosamente.");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -124,9 +125,9 @@ public class ExpenseDAO implements DAO<Expense> {
 
             ps.close();
             if (intReturned == 1) {
-                System.out.println("Expense with ID " + id + " updated successfully.");
+                NotificationUtils.showOnSuccess("Gasto con ID " + id + " actualizado exitosamente.");
             } else {
-                System.out.println("Expense with ID " + id + " not found.");
+                NotificationUtils.showOnError("Gasto con ID " + id + " no encontrado.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -143,9 +144,9 @@ public class ExpenseDAO implements DAO<Expense> {
 
             ps.close();
             if (intReturned == 1) {
-                System.out.println("Expense with ID " + id + " deleted successfully.");
+                NotificationUtils.showOnSuccess("Gasto con ID " + id + " eliminado exitosamente.");
             } else {
-                System.out.println("Expense with ID " + id + " not found.");
+                NotificationUtils.showOnError("Gasto con ID " + id + " no encontrado.");
             }
         } catch (SQLException e) {
             throw new RuntimeException(e);
