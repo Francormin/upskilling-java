@@ -5,6 +5,10 @@ public class ValidationUtils {
         return input == null || input.trim().isEmpty();
     }
 
+    public static boolean isShort(String input) {
+        return input.length() < 3;
+    }
+
     public static boolean isValidExpenseCategoryName(String expenseCategoryName) {
         return expenseCategoryName.matches("[a-zA-Z]+");
     }
