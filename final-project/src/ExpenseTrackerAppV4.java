@@ -33,11 +33,11 @@ public class ExpenseTrackerAppV4 {
 
         try {
             uploadExpenses(
-                    scanner,
-                    expenseAmountValidator,
-                    expenseDateValidator,
-                    expenseDescriptionValidator,
-                    expenseService);
+                scanner,
+                expenseAmountValidator,
+                expenseDateValidator,
+                expenseDescriptionValidator,
+                expenseService);
 
             List<Expense> expensesStoredInDatabase = expenseService.getAll();
             if (!expensesStoredInDatabase.isEmpty()) {
@@ -49,23 +49,24 @@ public class ExpenseTrackerAppV4 {
 
             requestExpenseIdToSearchForIt(scanner, expenseService);
             requestExpenseIdToUpdateIt(
-                    scanner,
-                    expenseAmountValidator,
-                    expenseDateValidator,
-                    expenseDescriptionValidator,
-                    expenseService
+                scanner,
+                expenseAmountValidator,
+                expenseDateValidator,
+                expenseDescriptionValidator,
+                expenseService
             );
+            requestExpenseIdToDeleteIt(scanner, expenseService);
         } catch (InvalidCutLogicVarException e) {
             System.err.println(e.getMessage());
         }
     }
 
     private static void uploadExpenses(
-            Scanner scanner,
-            ExpenseAmountValidator expenseAmountValidator,
-            ExpenseDateValidator expenseDateValidator,
-            ExpenseDescriptionValidator expenseDescriptionValidator,
-            Service<Expense> expenseService) throws InvalidCutLogicVarException {
+        Scanner scanner,
+        ExpenseAmountValidator expenseAmountValidator,
+        ExpenseDateValidator expenseDateValidator,
+        ExpenseDescriptionValidator expenseDescriptionValidator,
+        Service<Expense> expenseService) throws InvalidCutLogicVarException {
 
         boolean cutLogicVar;
         System.out.print("¿Desea cargar un gasto? TRUE / FALSE: ");
@@ -250,19 +251,19 @@ public class ExpenseTrackerAppV4 {
     }
 
     private static void requestExpenseIdToUpdateIt(
-            Scanner scanner,
-            ExpenseAmountValidator amountValidator,
-            ExpenseDateValidator dateValidator,
-            ExpenseDescriptionValidator descriptionValidator,
-            Service<Expense> expenseService) {
+        Scanner scanner,
+        ExpenseAmountValidator amountValidator,
+        ExpenseDateValidator dateValidator,
+        ExpenseDescriptionValidator descriptionValidator,
+        Service<Expense> expenseService) {
 
-        boolean continueSearch;
+        boolean continueUpdate;
 
         do {
 
             System.out.print("\n¿Desea actualizar un gasto? TRUE / FALSE: ");
             try {
-                continueSearch = scanner.nextBoolean();
+                continueUpdate = scanner.nextBoolean();
                 scanner.nextLine();
             } catch (InputMismatchException e) {
                 NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
@@ -270,7 +271,7 @@ public class ExpenseTrackerAppV4 {
                 continue;
             }
 
-            while (continueSearch) {
+            while (continueUpdate) {
 
                 System.out.print("\nIngrese el id del gasto: ");
                 try {
@@ -310,17 +311,70 @@ public class ExpenseTrackerAppV4 {
 
                 System.out.print("\n¿Desea actualizar otro gasto? TRUE / FALSE: ");
                 try {
-                    continueSearch = scanner.nextBoolean();
+                    continueUpdate = scanner.nextBoolean();
                     scanner.nextLine();
                 } catch (InputMismatchException e) {
                     NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
                     scanner.nextLine();
-                    continueSearch = false;
+                    continueUpdate = false;
                 }
 
             }
 
         } while (askToRetry(scanner));
 
+    }
+
+    private static void requestExpenseIdToDeleteIt(Scanner scanner, Service<Expense> expenseService) {
+        boolean continueDelete;
+
+        do {
+
+            System.out.print("\n¿Desea eliminar un gasto? TRUE / FALSE: ");
+            try {
+                continueDelete = scanner.nextBoolean();
+                scanner.nextLine();
+            } catch (InputMismatchException e) {
+                NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
+                scanner.nextLine();
+                continue;
+            }
+
+            while (continueDelete) {
+
+                System.out.print("\nIngrese el id del gasto: ");
+                try {
+                    int expenseId = scanner.nextInt();
+                    scanner.nextLine();
+
+                    if (expenseId <= 0) {
+                        NotificationUtils.showOnError("El id del gasto debe ser un número entero mayor a 0.");
+                    } else {
+                        Expense expenseToReturn = expenseService.getById(expenseId);
+
+                        if (expenseToReturn.getId() != null) {
+                            expenseService.delete(expenseToReturn.getId());
+                        } else {
+                            NotificationUtils.showOnError("Gasto no encontrado.");
+                        }
+                    }
+                } catch (InputMismatchException e) {
+                    NotificationUtils.showOnError("El valor ingresado no es un número válido.");
+                    scanner.nextLine();
+                }
+
+                System.out.print("\n¿Desea eliminar otro gasto? TRUE / FALSE: ");
+                try {
+                    continueDelete = scanner.nextBoolean();
+                    scanner.nextLine();
+                } catch (InputMismatchException e) {
+                    NotificationUtils.showOnError("El valor a ingresar debe ser 'true' o 'false'.");
+                    scanner.nextLine();
+                    continueDelete = false;
+                }
+
+            }
+
+        } while (askToRetry(scanner));
     }
 }
