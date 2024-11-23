@@ -36,7 +36,7 @@ public class ExpenseDAO implements DAO<Expense> {
                 Double amount = rs.getDouble("amount");
                 String date = rs.getString("date");
                 ExpenseCategory expenseCategory = ExpenseCategorySerializer.deserialize(
-                        rs.getString("expense_category")
+                    rs.getString("expense_category")
                 );
                 String description = rs.getString("description");
 
@@ -69,7 +69,7 @@ public class ExpenseDAO implements DAO<Expense> {
                 expense.setAmount(rs.getDouble("amount"));
                 expense.setDate(rs.getString("date"));
                 expense.setCategory(ExpenseCategorySerializer.deserialize(
-                        rs.getString("expense_category")
+                    rs.getString("expense_category")
                 ));
                 expense.setDescription(rs.getString("description"));
             }
@@ -87,7 +87,7 @@ public class ExpenseDAO implements DAO<Expense> {
     public void add(Expense expense) {
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "INSERT INTO expenses (amount, date, expense_category, description) VALUES (?, ?, ?, ?)"
+                "INSERT INTO expenses (amount, date, expense_category, description) VALUES (?, ?, ?, ?)"
             );
 
             ps.setDouble(1, expense.getAmount());
@@ -107,7 +107,7 @@ public class ExpenseDAO implements DAO<Expense> {
     public void update(int id, Expense expense) {
         try {
             PreparedStatement ps = conn.prepareStatement(
-                    "UPDATE expenses SET amount = ?, date = ?, expense_category = ?, description = ? WHERE id = ?"
+                "UPDATE expenses SET amount = ?, date = ?, expense_category = ?, description = ? WHERE id = ?"
             );
 
             ps.setDouble(1, expense.getAmount());

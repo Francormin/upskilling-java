@@ -8,17 +8,21 @@ import exceptions.InvalidExpenseDescriptionException;
 import interfaces.ExpenseAmountValidator;
 import interfaces.ExpenseDateValidator;
 import interfaces.ExpenseDescriptionValidator;
+import interfaces.ExpenseProcessor;
 import interfaces.impl.ExpenseAmountValidatorImpl;
 import interfaces.impl.ExpenseDateValidatorImpl;
 import interfaces.impl.ExpenseDescriptionValidatorImpl;
 import services.Service;
 import services.impl.ExpenseService;
 import utils.NotificationUtils;
+import utils.Utilities;
 import utils.ValidationUtils;
 
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class ExpenseTrackerAppV4 {
     public static void main(String[] args) {
@@ -32,6 +36,17 @@ public class ExpenseTrackerAppV4 {
         // DatabaseConfig.populateDatabase(conn);
 
         try {
+
+            // Primero se muestran los gastos que ya se encuentran guardados en la base de datos
+            List<Expense> expensesStoredInDatabase = expenseService.getAll();
+            if (!expensesStoredInDatabase.isEmpty()) {
+                System.out.println("GASTOS GUARDADOS:");
+                Utilities.printElements(expensesStoredInDatabase);
+            } else {
+                System.out.println("\nNO HAY GASTOS GUARDADOS.");
+            }
+
+            // Luego se le pide al usuario que cargue nuevos gastos al sistema si así lo desea
             uploadExpenses(
                 scanner,
                 expenseAmountValidator,
@@ -39,15 +54,10 @@ public class ExpenseTrackerAppV4 {
                 expenseDescriptionValidator,
                 expenseService);
 
-            List<Expense> expensesStoredInDatabase = expenseService.getAll();
-            if (!expensesStoredInDatabase.isEmpty()) {
-                System.out.println("\nGastos guardados en la BD:");
-                expensesStoredInDatabase.forEach(System.out::println);
-            } else {
-                System.out.println("\nNo hay gastos guardados en la BD.");
-            }
-
+            // Luego se le pide al usuario que ingrese un ID para buscar un gasto en particular si así lo desea
             requestExpenseIdToSearchForIt(scanner, expenseService);
+
+            // Luego se le pide al usuario que ingrese un ID para actualizar un gasto si así lo desea
             requestExpenseIdToUpdateIt(
                 scanner,
                 expenseAmountValidator,
@@ -55,7 +65,36 @@ public class ExpenseTrackerAppV4 {
                 expenseDescriptionValidator,
                 expenseService
             );
+
+            // Luego se le pide al usuario que ingrese un ID para eliminar un gasto si así lo desea
             requestExpenseIdToDeleteIt(scanner, expenseService);
+
+            // Resultados finales que se muestran después de todas las operaciones que el usuario haya realizado
+            List<Expense> expensesStoredInDatabaseAfterAll = expenseService.getAll();
+
+            // Contar y mostrar las categorías de los gastos del usuario
+            Map<String, Integer> categoryCounter = countExpenseCategories(expensesStoredInDatabaseAfterAll);
+            displayCategoryCounter(categoryCounter);
+
+            // Implementaciones directas de la interfaz funcional ExpenseProcessor
+            // a través de la utilización de expresiones lambda
+
+            // Calcular y mostrar la suma total de los gastos ingresados por el usuario
+            double totalSpent = calculateTotalExpenses(expensesStoredInDatabaseAfterAll);
+            System.out.println("\nTotal de gastos: " + totalSpent);
+
+            // Calcular y mostrar el promedio de los gastos ingresados por el usuario
+            double averageSpent = calculateAverageExpense(expensesStoredInDatabaseAfterAll);
+            System.out.println("Promedio de gastos: " + averageSpent);
+
+            // Se vuelven a mostrar los gastos guardados luego de las operaciones que haya realizado el usuario
+            if (!expensesStoredInDatabase.isEmpty()) {
+                System.out.println("\nGASTOS GUARDADOS:");
+                Utilities.printElements(expensesStoredInDatabaseAfterAll);
+            } else {
+                System.out.println("\nNO HAY GASTOS GUARDADOS.");
+            }
+
         } catch (InvalidCutLogicVarException e) {
             System.err.println(e.getMessage());
         }
@@ -69,7 +108,7 @@ public class ExpenseTrackerAppV4 {
         Service<Expense> expenseService) throws InvalidCutLogicVarException {
 
         boolean cutLogicVar;
-        System.out.print("¿Desea cargar un gasto? TRUE / FALSE: ");
+        System.out.print("\n¿Desea cargar un gasto? TRUE / FALSE: ");
 
         try {
             cutLogicVar = scanner.nextBoolean();
@@ -166,7 +205,7 @@ public class ExpenseTrackerAppV4 {
 
         while (true) {
             System.out.print("\nIngrese la descripción del gasto: ");
-            expenseDescription = scanner.nextLine().trim();
+            expenseDescription = scanner.nextLine().trim().toLowerCase();
 
             if (ValidationUtils.isBlank(expenseDescription)) {
                 NotificationUtils.showOnError("La descripción no puede estar vacía.");
@@ -180,6 +219,38 @@ public class ExpenseTrackerAppV4 {
                 NotificationUtils.showOnError(e.getMessage());
             }
         }
+    }
+
+    private static Map<String, Integer> countExpenseCategories(List<Expense> expenses) {
+        return expenses.stream()
+            .map(expense -> expense.getCategory().getName())
+            .collect(Collectors.toMap(
+                categoryName -> categoryName,
+                categoryName -> 1,
+                Integer::sum
+            ));
+    }
+
+    private static void displayCategoryCounter(Map<String, Integer> categoryCounter) {
+        System.out.println("\nContador por categoría:");
+        categoryCounter.entrySet().stream()
+            .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
+            .forEach(entry -> System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue()));
+    }
+
+    private static double calculateTotalExpenses(List<Expense> expenses) {
+        ExpenseProcessor totalCalculator = expense -> expense.stream()
+            .mapToDouble(Expense::getAmount)
+            .sum();
+        return totalCalculator.process(expenses);
+    }
+
+    private static double calculateAverageExpense(List<Expense> expenses) {
+        ExpenseProcessor averageCalculator = expense -> expense.stream()
+            .mapToDouble(Expense::getAmount)
+            .average()
+            .orElse(0.0);
+        return averageCalculator.process(expenses);
     }
 
     private static void requestExpenseIdToSearchForIt(Scanner scanner, Service<Expense> expenseService) {

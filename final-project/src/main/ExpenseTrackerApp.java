@@ -53,12 +53,12 @@ public class ExpenseTrackerApp {
             // Index validation previous to update
             Expense expenseToUpdate = user.getExpenseAtIndex(0);
             expenseManagement.updateExpense(
-                    user,
-                    expenseToUpdate,
-                    null,
-                    null,
-                    travelExpenseCategory,
-                    "Plane and buses"
+                user,
+                expenseToUpdate,
+                null,
+                null,
+                travelExpenseCategory,
+                "Plane and buses"
             );
         } catch (ExpenseNotFoundException e) {
             System.err.println("Updating expense error: " + e.getMessage());

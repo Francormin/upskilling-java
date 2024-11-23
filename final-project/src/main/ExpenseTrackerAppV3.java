@@ -39,17 +39,17 @@ public class ExpenseTrackerAppV3 {
 
             // Llamar al método principal que se encarga de cargar gastos al sistema
             uploadExpenses(
-                    scanner,
-                    expenseAmountValidator,
-                    expenseDateValidator,
-                    expenseDescriptionValidator,
-                    expenses);
+                scanner,
+                expenseAmountValidator,
+                expenseDateValidator,
+                expenseDescriptionValidator,
+                expenses);
 
             // Contar y mostrar las categorías de los gastos del usuario
             Map<String, Integer> categoryCounter = countExpenseCategories(expenses);
             displayCategoryCounter(categoryCounter);
 
-            // Implementaciones directas de la interfaz funcional ExpenseProcesor
+            // Implementaciones directas de la interfaz funcional ExpenseProcessor
             // a través de la utilización de expresiones lambda
 
             // Calcular y mostrar la suma total de los gastos ingresados por el usuario
@@ -70,11 +70,11 @@ public class ExpenseTrackerAppV3 {
     }
 
     private static void uploadExpenses(
-            Scanner scanner,
-            ExpenseAmountValidator expenseAmountValidator,
-            ExpenseDateValidator expenseDateValidator,
-            ExpenseDescriptionValidator expenseDescriptionValidator,
-            List<Expense> expenses) throws InvalidCutLogicVarException {
+        Scanner scanner,
+        ExpenseAmountValidator expenseAmountValidator,
+        ExpenseDateValidator expenseDateValidator,
+        ExpenseDescriptionValidator expenseDescriptionValidator,
+        List<Expense> expenses) throws InvalidCutLogicVarException {
 
         // Variable de corte para preguntar al usuario si desea cargar un nuevo gasto en el sistema
         boolean cutLogicVar;
@@ -176,7 +176,7 @@ public class ExpenseTrackerAppV3 {
 
         while (true) {
             System.out.print("Ingrese la descripción del gasto: ");
-            expenseDescription = scanner.nextLine().trim();
+            expenseDescription = scanner.nextLine().trim().toLowerCase();
 
             if (ValidationUtils.isBlank(expenseDescription)) {
                 NotificationUtils.showOnError("La descripción no puede estar vacía.");
@@ -194,33 +194,33 @@ public class ExpenseTrackerAppV3 {
 
     private static Map<String, Integer> countExpenseCategories(List<Expense> expenses) {
         return expenses.stream()
-                .map(expense -> expense.getCategory().getName())
-                .collect(Collectors.toMap(
-                        categoryName -> categoryName,
-                        categoryName -> 1,
-                        Integer::sum
-                ));
+            .map(expense -> expense.getCategory().getName())
+            .collect(Collectors.toMap(
+                categoryName -> categoryName,
+                categoryName -> 1,
+                Integer::sum
+            ));
     }
 
     private static void displayCategoryCounter(Map<String, Integer> categoryCounter) {
         System.out.println("\nContador por categoría:");
-        categoryCounter.forEach((category, count) ->
-                System.out.println("Categoría: " + category + ", Contador: " + count)
-        );
+        categoryCounter.entrySet().stream()
+            .sorted((entry1, entry2) -> entry2.getValue().compareTo(entry1.getValue()))
+            .forEach(entry -> System.out.println("Categoría: " + entry.getKey() + ", Contador: " + entry.getValue()));
     }
 
     private static double calculateTotalExpenses(List<Expense> expenses) {
         ExpenseProcessor totalCalculator = expense -> expense.stream()
-                .mapToDouble(Expense::getAmount)
-                .sum();
+            .mapToDouble(Expense::getAmount)
+            .sum();
         return totalCalculator.process(expenses);
     }
 
     private static double calculateAverageExpense(List<Expense> expenses) {
         ExpenseProcessor averageCalculator = expense -> expense.stream()
-                .mapToDouble(Expense::getAmount)
-                .average()
-                .orElse(0.0);
+            .mapToDouble(Expense::getAmount)
+            .average()
+            .orElse(0.0);
         return averageCalculator.process(expenses);
     }
 }

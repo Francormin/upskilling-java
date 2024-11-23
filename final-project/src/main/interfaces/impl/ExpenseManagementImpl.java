@@ -27,21 +27,21 @@ public class ExpenseManagementImpl implements ExpenseManagement {
 
     @Override
     public void updateExpense(
-            User user,
-            Expense expense,
-            Double newAmount,
-            String newDate,
-            ExpenseCategory newExpenseCategory,
-            String newDescription) throws ExpenseNotFoundException, InvalidExpenseAmountException {
+        User user,
+        Expense expense,
+        Double newAmount,
+        String newDate,
+        ExpenseCategory newExpenseCategory,
+        String newDescription) throws ExpenseNotFoundException, InvalidExpenseAmountException {
 
         if (!user.getExpenses().contains(expense)) {
             throw new ExpenseNotFoundException("Expense not found.");
         }
         expense.updateDetails(
-                Optional.ofNullable(newAmount),
-                Optional.ofNullable(newDate),
-                Optional.ofNullable(newExpenseCategory),
-                Optional.ofNullable(newDescription)
+            Optional.ofNullable(newAmount),
+            Optional.ofNullable(newDate),
+            Optional.ofNullable(newExpenseCategory),
+            Optional.ofNullable(newDescription)
         );
         System.out.println("Expense with ID " + expense.getId() + " updated.");
 

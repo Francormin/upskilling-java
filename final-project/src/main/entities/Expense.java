@@ -20,9 +20,9 @@ public class Expense {
     }
 
     public Expense(
-            Double amount,
-            String date,
-            ExpenseCategory expenseCategory) throws InvalidExpenseAmountException {
+        Double amount,
+        String date,
+        ExpenseCategory expenseCategory) throws InvalidExpenseAmountException {
 
         this(expenseCategory);
         if (amount <= 0) {
@@ -34,10 +34,10 @@ public class Expense {
     }
 
     public Expense(
-            Double amount,
-            String date,
-            ExpenseCategory expenseCategory,
-            String description) throws InvalidExpenseAmountException {
+        Double amount,
+        String date,
+        ExpenseCategory expenseCategory,
+        String description) throws InvalidExpenseAmountException {
 
         this(amount, date, expenseCategory);
         this.description = description.toLowerCase();
@@ -45,11 +45,11 @@ public class Expense {
     }
 
     public Expense(
-            int id,
-            Double amount,
-            String date,
-            ExpenseCategory expenseCategory,
-            String description) throws InvalidExpenseAmountException {
+        int id,
+        Double amount,
+        String date,
+        ExpenseCategory expenseCategory,
+        String description) throws InvalidExpenseAmountException {
 
         this(amount, date, expenseCategory, description);
         this.id = id;
@@ -57,10 +57,10 @@ public class Expense {
     }
 
     public void updateDetails(
-            Optional<Double> newAmount,
-            Optional<String> newDate,
-            Optional<ExpenseCategory> newCategory,
-            Optional<String> newDescription) throws InvalidExpenseAmountException {
+        Optional<Double> newAmount,
+        Optional<String> newDate,
+        Optional<ExpenseCategory> newCategory,
+        Optional<String> newDescription) throws InvalidExpenseAmountException {
 
         if (newAmount.isPresent()) {
             Double amount = newAmount.get();
@@ -119,11 +119,11 @@ public class Expense {
     @Override
     public String toString() {
         return "{ " +
-                "id=" + id +
-                ", amount=" + amount +
-                ", date='" + date + '\'' +
-                ", category='" + expenseCategory.getName() + '\'' +
-                ", description='" + description + '\'' +
-                " }";
+            "id=" + id +
+            ", amount=" + amount +
+            ", date='" + date + '\'' +
+            ", category='" + expenseCategory.getName() + '\'' +
+            ", description='" + description + '\'' +
+            " }";
     }
 }

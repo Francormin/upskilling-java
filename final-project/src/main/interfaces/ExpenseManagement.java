@@ -12,10 +12,10 @@ public interface ExpenseManagement {
     void removeExpense(User user, Expense expense) throws ExpenseNotFoundException;
 
     void updateExpense(
-            User user,
-            Expense expense,
-            Double newAmount,
-            String newDate,
-            ExpenseCategory newExpenseCategory,
-            String newDescription) throws ExpenseNotFoundException, InvalidExpenseAmountException;
+        User user,
+        Expense expense,
+        Double newAmount,
+        String newDate,
+        ExpenseCategory newExpenseCategory,
+        String newDescription) throws ExpenseNotFoundException, InvalidExpenseAmountException;
 }
