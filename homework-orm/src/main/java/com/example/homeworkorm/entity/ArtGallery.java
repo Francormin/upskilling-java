@@ -13,7 +13,6 @@ import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
 import lombok.Data;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +22,7 @@ import java.util.List;
 public class ArtGallery {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)
