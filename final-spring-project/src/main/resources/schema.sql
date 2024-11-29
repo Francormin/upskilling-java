@@ -1,0 +1,7 @@
+CREATE TABLE IF NOT EXISTS expenses (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    amount DOUBLE PRECISION NOT NULL,
+    date VARCHAR(255) NOT NULL,
+    category OTHER,
+    description VARCHAR(255)
+);
