@@ -63,4 +63,25 @@ class BookControllerTest {
                 .value("publishYear: Publish year must be equal or greater than 1600"));
     }
 
+    @Test
+    void shouldReturnBadRequestWhenPageQuantityIsInvalid() throws Exception {
+        // Given
+        String bookJson = """
+                {
+                    "title": "Valid Title",
+                    "author": "Valid Author",
+                    "publishYear": 2020,
+                    "pageQuantity": 10
+                }
+            """;
+
+        // When & Then
+        mockMvc.perform(post("/api/books")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(bookJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$[0]")
+                .value("pageQuantity: Page quantity must be equal or greater than 15"));
+    }
+
 }
