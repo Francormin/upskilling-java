@@ -241,7 +241,7 @@ class BookServiceTest {
         String title = "Nonexistent Title";
         when(bookRepository.findByTitleContainingIgnoreCase(title)).thenReturn(List.of());
 
-        // When / Then
+        // When & Then
         BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> {
             bookService.getBooksByTitle(title);
         });
