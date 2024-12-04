@@ -21,7 +21,20 @@ public class BookService {
     @Autowired
     private BookRepository bookRepository;
 
-    public List<BookDTO> filterBooksByTitle(String title) {
+    public List<BookDTO> getAllBooks() {
+        return bookRepository.findAll()
+            .stream()
+            .map(ConversionUtil::fromEntityToDTO)
+            .toList();
+    }
+
+    public BookDTO getBookById(Long id) {
+        return bookRepository.findById(id)
+            .map(ConversionUtil::fromEntityToDTO)
+            .orElseThrow(() -> new BookNotFoundException("Book with ID " + id + " not found."));
+    }
+
+    public List<BookDTO> getBooksByTitle(String title) {
         validateNotEmpty(title, "Title");
 
         List<Book> books = bookRepository.findByTitleContainingIgnoreCase(title);
@@ -34,7 +47,7 @@ public class BookService {
             .toList();
     }
 
-    public List<BookDTO> filterBooksByAuthor(String author) {
+    public List<BookDTO> getBooksByAuthor(String author) {
         validateNotEmpty(author, "Author");
 
         List<Book> books = bookRepository.findByAuthorContainingIgnoreCase(author);
