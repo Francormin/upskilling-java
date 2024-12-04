@@ -12,7 +12,7 @@
     <artifactId>demo-test-integracion</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>demotestintegracion</name>
-    <description>Primer acercamiento a los tests de integración en Spring Boot</description>
+    <description>Spring Boot integration testing first approach</description>
     <url/>
     <licenses>
         <license/>
