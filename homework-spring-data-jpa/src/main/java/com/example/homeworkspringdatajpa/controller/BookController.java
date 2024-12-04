@@ -26,15 +26,27 @@ public class BookController {
     @Autowired
     private BookService bookService;
 
+    @GetMapping
+    public ResponseEntity<List<BookDTO>> getAllBooks() {
+        List<BookDTO> books = bookService.getAllBooks();
+        return ResponseEntity.ok(books);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<BookDTO> getBookById(@PathVariable Long id) {
+        BookDTO book = bookService.getBookById(id);
+        return ResponseEntity.ok(book);
+    }
+
     @GetMapping("/by-author")
-    public ResponseEntity<List<BookDTO>> getBooksFilteredByAuthor(@RequestParam String author) {
-        List<BookDTO> filteredBooks = bookService.filterBooksByAuthor(author);
+    public ResponseEntity<List<BookDTO>> getBooksByAuthor(@RequestParam String author) {
+        List<BookDTO> filteredBooks = bookService.getBooksByAuthor(author);
         return ResponseEntity.ok(filteredBooks);
     }
 
     @GetMapping("/by-title")
-    public ResponseEntity<List<BookDTO>> getBooksFilteredByTitle(@RequestParam String title) {
-        List<BookDTO> filteredBooks = bookService.filterBooksByTitle(title);
+    public ResponseEntity<List<BookDTO>> getBooksByTitle(@RequestParam String title) {
+        List<BookDTO> filteredBooks = bookService.getBooksByTitle(title);
         return ResponseEntity.ok(filteredBooks);
     }
 
