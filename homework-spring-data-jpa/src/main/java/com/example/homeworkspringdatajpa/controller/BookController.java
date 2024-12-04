@@ -38,6 +38,23 @@ public class BookController {
         return ResponseEntity.ok(book);
     }
 
+    /*
+    @GetMapping("/search")
+    public ResponseEntity<List<BookDTO>> searchBooks(
+        @RequestParam(required = false) String title,
+        @RequestParam(required = false) String author) {
+
+        if (title != null) {
+            return ResponseEntity.ok(bookService.getBooksByTitle(title));
+        } else if (author != null) {
+            return ResponseEntity.ok(bookService.getBooksByAuthor(author));
+        } else {
+            return ResponseEntity.badRequest().build();
+        }
+
+    }
+    */
+
     @GetMapping("/by-author")
     public ResponseEntity<List<BookDTO>> getBooksByAuthor(@RequestParam String author) {
         List<BookDTO> filteredBooks = bookService.getBooksByAuthor(author);
