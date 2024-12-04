@@ -31,6 +31,62 @@ class BookServiceTest {
     private BookService bookService;
 
     @Test
+    void shouldGetAllBooks() {
+        // Given
+        List<Book> books = List.of(
+            new Book(1L, "Spring in Action", "Craig Walls", 2018, 450),
+            new Book(2L, "Spring Boot Guide", "Mark Heckler", 2020, 320)
+        );
+
+        when(bookRepository.findAll()).thenReturn(books);
+
+        // When
+        List<BookDTO> result = bookService.getAllBooks();
+
+        // Then
+        assertEquals(2, result.size());
+        assertEquals("Spring in Action", result.get(0).getTitle());
+        assertEquals("Spring Boot Guide", result.get(1).getTitle());
+        verify(bookRepository, times(1)).findAll();
+    }
+
+    @Test
+    void shouldGetBookById() {
+        // Given
+        Long bookId = 1L;
+        Book book = new Book(
+            bookId,
+            "Spring in Action",
+            "Craig Walls",
+            2018,
+            450
+        );
+
+        when(bookRepository.findById(bookId)).thenReturn(Optional.of(book));
+
+        // When
+        BookDTO result = bookService.getBookById(bookId);
+
+        // Then
+        assertEquals("Spring in Action", result.getTitle());
+        assertEquals("Craig Walls", result.getAuthor());
+        verify(bookRepository, times(1)).findById(bookId);
+    }
+
+    @Test
+    void shouldThrowExceptionIfBookNotFoundById() {
+        // Given
+        Long bookId = 1L;
+        when(bookRepository.findById(bookId)).thenReturn(Optional.empty());
+
+        // When & Then
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> {
+            bookService.getBookById(bookId);
+        });
+        assertEquals("Book with ID " + bookId + " not found.", exception.getMessage());
+    }
+
+    @Test
     void shouldCreateBook() {
         // Given
         Book book = new Book();
@@ -122,6 +178,31 @@ class BookServiceTest {
     }
 
     @Test
+    void shouldThrowExceptionIfAuthorIsEmpty() {
+        // Given
+        String author = "";
+
+        // When & Then
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookService.getBooksByAuthor(author);
+        });
+        assertEquals("Author must not be empty.", exception.getMessage());
+    }
+
+    @Test
+    void shouldThrowExceptionIfNoBooksFoundByAuthor() {
+        // Given
+        String author = "Nonexistent Author";
+        when(bookRepository.findByAuthorContainingIgnoreCase(author)).thenReturn(List.of());
+
+        // When & Then
+        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> {
+            bookService.getBooksByAuthor(author);
+        });
+        assertEquals("No books found for author: " + author, exception.getMessage());
+    }
+
+    @Test
     void shouldGetBooksByTitle() {
         // Given
         String title = "Spring";
@@ -143,16 +224,15 @@ class BookServiceTest {
     }
 
     @Test
-    void shouldThrowExceptionIfNoBooksFoundByAuthor() {
+    void shouldThrowExceptionIfTitleIsEmpty() {
         // Given
-        String author = "Nonexistent Author";
-        when(bookRepository.findByAuthorContainingIgnoreCase(author)).thenReturn(List.of());
+        String title = "";
 
         // When & Then
-        BookNotFoundException exception = assertThrows(BookNotFoundException.class, () -> {
-            bookService.getBooksByAuthor(author);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            bookService.getBooksByTitle(title);
         });
-        assertEquals("No books found for author: " + author, exception.getMessage());
+        assertEquals("Title must not be empty.", exception.getMessage());
     }
 
     @Test
@@ -166,30 +246,6 @@ class BookServiceTest {
             bookService.getBooksByTitle(title);
         });
         assertEquals("No books found with title containing: " + title, exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionIfTitleIsEmpty() {
-        // Given
-        String title = "";
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            bookService.getBooksByTitle(title);
-        });
-        assertEquals("Title must not be empty.", exception.getMessage());
-    }
-
-    @Test
-    void shouldThrowExceptionIfAuthorIsEmpty() {
-        // Given
-        String author = "";
-
-        // When & Then
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            bookService.getBooksByAuthor(author);
-        });
-        assertEquals("Author must not be empty.", exception.getMessage());
     }
 
 }
