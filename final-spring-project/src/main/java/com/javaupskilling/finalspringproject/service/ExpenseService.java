@@ -2,7 +2,6 @@ package com.javaupskilling.finalspringproject.service;
 
 import com.javaupskilling.finalspringproject.dto.ExpenseRequestDto;
 import com.javaupskilling.finalspringproject.dto.ExpenseResponseDto;
-import com.javaupskilling.finalspringproject.model.Expense;
 
 import java.util.List;
 
