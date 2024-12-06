@@ -1,8 +1,9 @@
 package com.javaupskilling.finalspringproject.exception;
 
-public class ExpenseNotFoundException extends RuntimeException {
+@Deprecated
+public class ExpenseNotFoundException_deprecated extends RuntimeException {
 
-    public ExpenseNotFoundException(String message) {
+    public ExpenseNotFoundException_deprecated(String message) {
         super(message);
     }
 
