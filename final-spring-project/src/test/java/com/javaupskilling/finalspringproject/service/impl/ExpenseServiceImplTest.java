@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -90,7 +91,34 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void testGetById_Success() {
+    void getAll_Success() {
+        // Given
+        Expense expense = createExpense();
+        when(expenseRepository.findAll()).thenReturn(List.of(expense));
+
+        // When
+        List<ExpenseResponseDto> result = expenseService.getAll();
+
+        // Then
+        assertNotNull(result);
+        assertEquals(1, result.size());
+        verify(expenseRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getAll_ExpensesNotFound() {
+        // Given
+        when(expenseRepository.findAll()).thenReturn(List.of());
+
+        // When & Then
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+            () -> expenseService.getAll());
+        assertEquals("Expense: No expenses found in the system", exception.getMessage());
+        verify(expenseRepository, times(1)).findAll();
+    }
+
+    @Test
+    void getById_Success() {
         // Given
         Expense expense = createExpense();
         expense.setId(1L);
@@ -106,18 +134,19 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void testGetById_ExpenseNotFound() {
+    void getById_ExpenseNotFound() {
         // Given
-        when(expenseRepository.findById(1L)).thenReturn(Optional.empty());
+        when(expenseRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
             () -> expenseService.getById(1L));
         assertEquals("Expense with ID 1 not found", exception.getMessage());
+        verify(expenseRepository, times(1)).findById(anyLong());
     }
 
     @Test
-    void testGetByUserId_Success() {
+    void getByUserId_Success() {
         // Given
         Expense expense = createExpense();
         expense.setId(1L);
@@ -134,18 +163,19 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void testGetByUserId_ExpenseNotFound() {
+    void getByUserId_ExpenseNotFound() {
         // Given
-        when(expenseRepository.findByUserId(1L)).thenReturn(List.of());
+        when(expenseRepository.findByUserId(anyLong())).thenReturn(List.of());
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
             () -> expenseService.getByUserId(1L));
         assertEquals("User: No expenses found for user ID 1", exception.getMessage());
+        verify(expenseRepository, times(1)).findByUserId(anyLong());
     }
 
     @Test
-    void testCreateExpense_Success() {
+    void create_Success() {
         // Given
         Expense expense = createExpense();
 
@@ -164,19 +194,19 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void testCreateExpense_ExpenseCategoryNotFound() {
+    void create_ExpenseCategoryNotFound() {
         // Given
-        when(expenseCategoryRepository.findById(expenseRequestDto.getExpenseCategoryId()))
-            .thenReturn(Optional.empty());
+        when(expenseCategoryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
             () -> expenseService.create(expenseRequestDto));
         assertEquals("ExpenseCategory with ID 1 not found", exception.getMessage());
+        verify(expenseCategoryRepository, times(1)).findById(anyLong());
     }
 
     @Test
-    void testDeleteExpense_Success() {
+    void delete_Success() {
         // Given
         when(expenseRepository.existsById(1L)).thenReturn(true);
 
@@ -189,14 +219,15 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void testDeleteExpense_ExpenseNotFound() {
+    void delete_ExpenseNotFound() {
         // Given
-        when(expenseRepository.existsById(1L)).thenReturn(false);
+        when(expenseRepository.existsById(anyLong())).thenReturn(false);
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
             () -> expenseService.delete(1L));
         assertEquals("Expense with ID 1 not found", exception.getMessage());
+        verify(expenseRepository, times(1)).existsById(anyLong());
     }
 
 }
