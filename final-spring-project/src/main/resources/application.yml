@@ -1,12 +1,36 @@
 spring:
+  # Configuración de H2 en memoria
   datasource:
     driverClassName: org.h2.Driver
-    url: jdbc:h2:~/expenses_db
+    url: jdbc:h2:mem:expenses_db
     username: sa
     password: ""
-  h2:
-    console:
-      enabled: true
+    platform: h2
+    initialization-mode: always
+  # Configuración de JPA y Hibernate
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  # Configuración para inicialización de SQL
   sql:
     init:
       mode: always
+  # Configuración de la consola H2
+  h2:
+    console:
+      enabled: true
+      path: "/h2-console"
+
+# Configuración del servidor
+server:
+  port: 8080
+
+# Configuración de logging para SQL
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace
