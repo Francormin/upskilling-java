@@ -1,6 +1,6 @@
 package com.javaupskilling.finalspringproject.service.impl;
 
-import com.javaupskilling.finalspringproject.exception.ExpenseNotFoundException;
+import com.javaupskilling.finalspringproject.exception.ExpenseNotFoundException_deprecated;
 import com.javaupskilling.finalspringproject.model.Expense;
 import com.javaupskilling.finalspringproject.repository.IRepository_deprecated;
 import com.javaupskilling.finalspringproject.service.IService_deprecated;
@@ -13,12 +13,12 @@ import java.util.Optional;
 
 @Deprecated
 @Service
-public class ExpenseService_deprecated_deprecated implements IService_deprecated<Expense> {
+public class ExpenseService_deprecated implements IService_deprecated<Expense> {
 
     private final IRepository_deprecated<Expense> expenseRepository;
 
     @Autowired
-    public ExpenseService_deprecated_deprecated(IRepository_deprecated<Expense> expenseRepository) {
+    public ExpenseService_deprecated(IRepository_deprecated<Expense> expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
 
@@ -28,10 +28,10 @@ public class ExpenseService_deprecated_deprecated implements IService_deprecated
     }
 
     @Override
-    public Expense getById(Long id) throws ExpenseNotFoundException {
+    public Expense getById(Long id) throws ExpenseNotFoundException_deprecated {
         Optional<Expense> expenseFound = expenseRepository.getById(id);
         if (expenseFound.isEmpty()) {
-            throw new ExpenseNotFoundException("Expense not found");
+            throw new ExpenseNotFoundException_deprecated("Expense not found");
         }
         return expenseFound.get();
     }
@@ -56,12 +56,12 @@ public class ExpenseService_deprecated_deprecated implements IService_deprecated
     }
 
     @Override
-    public void delete(Long id) throws ExpenseNotFoundException {
+    public void delete(Long id) throws ExpenseNotFoundException_deprecated {
         try {
             getById(id);
             expenseRepository.delete(id);
-        } catch (ExpenseNotFoundException e) {
-            throw new ExpenseNotFoundException(e.getMessage());
+        } catch (ExpenseNotFoundException_deprecated e) {
+            throw new ExpenseNotFoundException_deprecated(e.getMessage());
         }
     }
 
