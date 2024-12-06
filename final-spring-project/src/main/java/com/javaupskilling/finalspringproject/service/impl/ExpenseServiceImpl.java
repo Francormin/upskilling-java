@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.javaupskilling.finalspringproject.util.ConversionUtil.fromEntityToResponseDto;
+import static com.javaupskilling.finalspringproject.util.ConversionUtil.fromExpenseEntityToResponseDto;
+import static com.javaupskilling.finalspringproject.util.ConversionUtil.fromRequestDtoToExpenseEntity;
+import static com.javaupskilling.finalspringproject.util.ConversionUtil.fromRequestDtoToExpenseEntityUpdate;
 
 @Slf4j
 @Service
@@ -48,7 +50,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
         return expenses.stream()
-            .map(ConversionUtil::fromEntityToResponseDto)
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
             .toList();
     }
 
@@ -56,7 +58,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     @Transactional(readOnly = true)
     public ExpenseResponseDto getById(Long id) {
         return expenseRepository.findById(id)
-            .map(ConversionUtil::fromEntityToResponseDto)
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
             .orElseThrow(() -> new EntityNotFoundException("Expense", id));
     }
 
@@ -69,7 +71,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
         return expenses.stream()
-            .map(ConversionUtil::fromEntityToResponseDto)
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
             .toList();
     }
 
@@ -82,7 +84,7 @@ public class ExpenseServiceImpl implements ExpenseService {
         }
 
         return expenses.stream()
-            .map(ConversionUtil::fromEntityToResponseDto)
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
             .toList();
     }
 
@@ -97,15 +99,13 @@ public class ExpenseServiceImpl implements ExpenseService {
         User user = userRepository.findById(dto.getUserId())
             .orElseThrow(() -> new EntityNotFoundException("User", dto.getUserId()));
 
-        Expense expense = new Expense();
-        expense.setAmount(dto.getAmount());
-        expense.setDate(dto.getDate());
-        expense.setDescription(dto.getDescription());
-        expense.setExpenseCategory(expenseCategory);
-        expense.setUser(user);
+        Expense savedExpense = expenseRepository.save(fromRequestDtoToExpenseEntity(
+            dto,
+            expenseCategory,
+            user)
+        );
 
-        Expense savedExpense = expenseRepository.save(expense);
-        return fromEntityToResponseDto(savedExpense);
+        return fromExpenseEntityToResponseDto(savedExpense);
     }
 
     @Override
@@ -122,14 +122,14 @@ public class ExpenseServiceImpl implements ExpenseService {
         User user = userRepository.findById(dto.getUserId())
             .orElseThrow(() -> new EntityNotFoundException("User", dto.getUserId()));
 
-        existingExpense.setAmount(dto.getAmount());
-        existingExpense.setDate(dto.getDate());
-        existingExpense.setDescription(dto.getDescription());
-        existingExpense.setExpenseCategory(expenseCategory);
-        existingExpense.setUser(user);
+        Expense updatedExpense = expenseRepository.save(fromRequestDtoToExpenseEntityUpdate(
+            existingExpense,
+            dto,
+            expenseCategory,
+            user)
+        );
 
-        Expense updatedExpense = expenseRepository.save(existingExpense);
-        return fromEntityToResponseDto(updatedExpense);
+        return fromExpenseEntityToResponseDto(updatedExpense);
     }
 
     @Override
