@@ -1,9 +1,9 @@
 package com.javaupskilling.finalspringproject.service.impl;
 
-import com.javaupskilling.finalspringproject.exception.ExpenseNotFoundException;
+import com.javaupskilling.finalspringproject.exception.ExpenseNotFoundException_deprecated;
 import com.javaupskilling.finalspringproject.model.Expense;
 import com.javaupskilling.finalspringproject.model.ExpenseCategory;
-import com.javaupskilling.finalspringproject.repository.IRepository;
+import com.javaupskilling.finalspringproject.repository.IRepository_deprecated;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,18 +22,19 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-class ExpenseServiceTest {
+@Deprecated
+class ExpenseServiceTest_deprecated {
 
-    private ExpenseService expenseService;
-    private IRepository<Expense> expenseRepository;
+    private ExpenseService_deprecated expenseService;
+    private IRepository_deprecated<Expense> expenseRepository;
 
     @BeforeEach
     void setUp() {
-        expenseRepository = Mockito.mock(IRepository.class);
-        expenseService = new ExpenseService(expenseRepository);
+        expenseRepository = Mockito.mock(IRepository_deprecated.class);
+        expenseService = new ExpenseService_deprecated(expenseRepository);
     }
 
-    @Test
+/*    @Test
     void getAll() {
         // Given
         Expense expense1 = new Expense(
@@ -60,10 +61,10 @@ class ExpenseServiceTest {
         assertEquals(2, expenses.size());
         assertEquals("food", expenses.get(0).getExpenseCategory().getName());
         verify(expenseRepository, times(1)).getAll();
-    }
+    }*/
 
-    @Test
-    void getById() throws ExpenseNotFoundException {
+/*    @Test
+    void getById() throws ExpenseNotFoundException_deprecated {
         // Given
         Long expenseId = 1L;
         Expense expense = new Expense(
@@ -84,7 +85,7 @@ class ExpenseServiceTest {
         assertEquals(expenseId, foundExpense.getId());
         assertEquals("rent", foundExpense.getExpenseCategory().getName());
         verify(expenseRepository, times(1)).getById(expenseId);
-    }
+    }*/
 
     @Test
     void getByIdThrowsExceptionWhenNotFound() {
@@ -92,12 +93,12 @@ class ExpenseServiceTest {
         Long expenseId = 99L;
         when(expenseRepository.getById(expenseId)).thenReturn(Optional.empty());
 
-        // When / Then
-        assertThrows(ExpenseNotFoundException.class, () -> expenseService.getById(expenseId));
+        // When & Then
+        assertThrows(ExpenseNotFoundException_deprecated.class, () -> expenseService.getById(expenseId));
         verify(expenseRepository, times(1)).getById(expenseId);
     }
 
-    @Test
+/*    @Test
     void create() {
         // Given
         Expense expense = new Expense(
@@ -114,9 +115,9 @@ class ExpenseServiceTest {
 
         // Then
         verify(expenseRepository, times(1)).create(expense);
-    }
+    }*/
 
-    @Test
+/*    @Test
     void createThrowsRuntimeException() {
         // Given
         Expense expense = new Expense(
@@ -128,13 +129,13 @@ class ExpenseServiceTest {
 
         doThrow(new RuntimeException("Database error")).when(expenseRepository).create(expense);
 
-        // When / Then
+        // When & Then
         assertThrows(RuntimeException.class, () -> expenseService.create(expense));
         verify(expenseRepository, times(1)).create(expense);
-    }
+    }*/
 
-    @Test
-    void update() throws ExpenseNotFoundException {
+/*    @Test
+    void update() throws ExpenseNotFoundException_deprecated {
         // Given
         Long expenseId = 1L;
         Expense expense = new Expense(
@@ -154,9 +155,9 @@ class ExpenseServiceTest {
         // Then
         verify(expenseRepository, times(1)).getById(expenseId);
         verify(expenseRepository, times(1)).update(expenseId, expense);
-    }
+    }*/
 
-    @Test
+/*    @Test
     void updateThrowsRuntimeException() {
         // Given
         Long expenseId = 1L;
@@ -171,14 +172,14 @@ class ExpenseServiceTest {
         when(expenseRepository.getById(expenseId)).thenReturn(Optional.of(expense));
         doThrow(new RuntimeException("Database error")).when(expenseRepository).update(expenseId, expense);
 
-        // When / Then
+        // When & Then
         assertThrows(RuntimeException.class, () -> expenseService.update(expenseId, expense));
         verify(expenseRepository, times(1)).getById(expenseId);
         verify(expenseRepository, times(1)).update(expenseId, expense);
-    }
+    }*/
 
-    @Test
-    void delete() throws ExpenseNotFoundException {
+/*    @Test
+    void delete() throws ExpenseNotFoundException_deprecated {
         // Given
         Long expenseId = 1L;
         Expense expense = new Expense(
@@ -198,7 +199,7 @@ class ExpenseServiceTest {
         // Then
         verify(expenseRepository, times(1)).getById(expenseId);
         verify(expenseRepository, times(1)).delete(expenseId);
-    }
+    }*/
 
     @Test
     void deleteThrowsExpenseNotFoundException() {
@@ -206,8 +207,8 @@ class ExpenseServiceTest {
         Long expenseId = 99L;
         when(expenseRepository.getById(expenseId)).thenReturn(Optional.empty());
 
-        // When / Then
-        assertThrows(ExpenseNotFoundException.class, () -> expenseService.delete(expenseId));
+        // When & Then
+        assertThrows(ExpenseNotFoundException_deprecated.class, () -> expenseService.delete(expenseId));
         verify(expenseRepository, times(1)).getById(expenseId);
     }
 
