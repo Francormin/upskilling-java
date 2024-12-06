@@ -2,8 +2,8 @@ package com.javaupskilling.finalspringproject.service.impl;
 
 import com.javaupskilling.finalspringproject.exception.ExpenseNotFoundException;
 import com.javaupskilling.finalspringproject.model.Expense;
-import com.javaupskilling.finalspringproject.repository.IRepository;
-import com.javaupskilling.finalspringproject.service.IService;
+import com.javaupskilling.finalspringproject.repository.IRepository_deprecated;
+import com.javaupskilling.finalspringproject.service.IService_deprecated;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,14 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 @Service
-public class ExpenseService implements IService<Expense> {
+public class ExpenseService_deprecated_deprecated implements IService_deprecated<Expense> {
 
-    private final IRepository<Expense> expenseRepository;
+    private final IRepository_deprecated<Expense> expenseRepository;
 
     @Autowired
-    public ExpenseService(IRepository<Expense> expenseRepository) {
+    public ExpenseService_deprecated_deprecated(IRepository_deprecated<Expense> expenseRepository) {
         this.expenseRepository = expenseRepository;
     }
 

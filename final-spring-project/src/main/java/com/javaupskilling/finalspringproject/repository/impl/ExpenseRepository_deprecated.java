@@ -1,7 +1,7 @@
 package com.javaupskilling.finalspringproject.repository.impl;
 
 import com.javaupskilling.finalspringproject.model.Expense;
-import com.javaupskilling.finalspringproject.repository.IRepository;
+import com.javaupskilling.finalspringproject.repository.IRepository_deprecated;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -12,8 +12,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+@Deprecated
 @Repository
-public class ExpenseRepository implements IRepository<Expense> {
+public class ExpenseRepository_deprecated_deprecated implements IRepository_deprecated<Expense> {
 
     private final static String SELECT_ALL = "SELECT * FROM expenses";
     private final static String SELECT_BY_ID = "SELECT * FROM expenses WHERE id = ?";
@@ -26,7 +27,7 @@ public class ExpenseRepository implements IRepository<Expense> {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ExpenseRepository(JdbcTemplate jdbcTemplate) {
+    public ExpenseRepository_deprecated_deprecated(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
