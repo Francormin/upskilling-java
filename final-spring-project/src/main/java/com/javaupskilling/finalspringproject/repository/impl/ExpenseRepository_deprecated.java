@@ -14,7 +14,7 @@ import java.util.Optional;
 
 @Deprecated
 @Repository
-public class ExpenseRepository_deprecated_deprecated implements IRepository_deprecated<Expense> {
+public class ExpenseRepository_deprecated implements IRepository_deprecated<Expense> {
 
     private final static String SELECT_ALL = "SELECT * FROM expenses";
     private final static String SELECT_BY_ID = "SELECT * FROM expenses WHERE id = ?";
@@ -27,7 +27,7 @@ public class ExpenseRepository_deprecated_deprecated implements IRepository_depr
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public ExpenseRepository_deprecated_deprecated(JdbcTemplate jdbcTemplate) {
+    public ExpenseRepository_deprecated(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

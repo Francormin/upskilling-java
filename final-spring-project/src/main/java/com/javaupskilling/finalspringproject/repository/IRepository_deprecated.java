@@ -3,7 +3,8 @@ package com.javaupskilling.finalspringproject.repository;
 import java.util.List;
 import java.util.Optional;
 
-public interface IRepository<T> {
+@Deprecated
+public interface IRepository_deprecated<T> {
 
     List<T> getAll();
 
