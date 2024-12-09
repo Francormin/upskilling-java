@@ -89,6 +89,22 @@ class UserControllerIntegrationTest {
     }
 
     @Test
+    @DisplayName("GET /api/v1/users - Should return not found when there are no users in the system")
+    void getAll_ShouldReturnNotFoundWhenThereAreNoUsersInTheSystem() throws Exception {
+        // Given
+        given(userService.getAll())
+            .willThrow(new EntityNotFoundException("User", "No users found in the system"));
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/users")
+                .contentType(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound())
+            .andExpect(jsonPath("$.message", is("User: No users found in the system")));
+
+        verify(userService, times(1)).getAll();
+    }
+
+    @Test
     @DisplayName("GET /api/v1/users/{id} - Should return a user by ID")
     void getById_ShouldReturnUser() throws Exception {
         // Given
@@ -113,7 +129,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @DisplayName("GET /api/v1/users/{id} - Should return not found when getting non existing user")
-    void getById_shouldReturnNotFoundWhenGettingNonExistingUser() throws Exception {
+    void getById_ShouldReturnNotFoundWhenGettingNonExistingUser() throws Exception {
         // Given
         Long nonExistingId = 999L;
         given(userService.getById(nonExistingId))
@@ -207,7 +223,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @DisplayName("POST /api/v1/users - Should return bad request when creating user with invalid data")
-    void create_shouldReturnBadRequestWhenCreatingUserWithInvalidData() throws Exception {
+    void create_ShouldReturnBadRequestWhenCreatingUserWithInvalidData() throws Exception {
         // Given
         UserRequestDto invalidRequest = new UserRequestDto();
         invalidRequest.setName("");
@@ -218,11 +234,14 @@ class UserControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errors", hasSize(3)))
+            .andExpect(jsonPath("$.errors", hasSize(6)))
             .andExpect(jsonPath("$.errors", containsInAnyOrder(
                 containsString("Name cannot be null nor blank"),
+                containsString("Name can only contain letters"),
+                containsString("Name must have a minimum of 2 letters"),
                 containsString("Surname cannot be null nor blank"),
-                containsString("Email must be a valid one")
+                containsString("Email must be a valid one"),
+                containsString("Email must have this format: test@example.com")
             )));
     }
 
@@ -258,7 +277,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @DisplayName("PUT /api/v1/users/{id} - Should return not found when updating non existing user")
-    void update_shouldReturnNotFoundWhenUpdatingNonExistingUser() throws Exception {
+    void update_ShouldReturnNotFoundWhenUpdatingNonExistingUser() throws Exception {
         // Given
         Long nonExistingId = 999L;
         UserRequestDto validRequest = new UserRequestDto();
@@ -296,7 +315,7 @@ class UserControllerIntegrationTest {
 
     @Test
     @DisplayName("DELETE /api/v1/users/{id} - Should return not found when deleting non existing user")
-    void delete_shouldReturnNotFoundWhenDeletingNonExistingUser() throws Exception {
+    void delete_ShouldReturnNotFoundWhenDeletingNonExistingUser() throws Exception {
         // Given
         Long nonExistingId = 999L;
         doThrow(new EntityNotFoundException("User", nonExistingId))
