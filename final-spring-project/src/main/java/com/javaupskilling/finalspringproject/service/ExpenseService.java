@@ -15,6 +15,8 @@ public interface ExpenseService {
 
     List<ExpenseResponseDto> getByDate(String date);
 
+    List<ExpenseResponseDto> getByExpenseCategoryId(Long expenseCategoryId);
+
     ExpenseResponseDto create(ExpenseRequestDto dto);
 
     ExpenseResponseDto update(Long id, ExpenseRequestDto dto);

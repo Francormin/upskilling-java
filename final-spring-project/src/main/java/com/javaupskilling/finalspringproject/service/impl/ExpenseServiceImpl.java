@@ -89,6 +89,21 @@ public class ExpenseServiceImpl implements ExpenseService {
     }
 
     @Override
+    public List<ExpenseResponseDto> getByExpenseCategoryId(Long expenseCategoryId) {
+        List<Expense> expenses = expenseRepository.findByExpenseCategoryId(expenseCategoryId);
+        if (expenses.isEmpty()) {
+            throw new EntityNotFoundException(
+                "Expense",
+                "No expenses found for expense category ID " + expenseCategoryId
+            );
+        }
+
+        return expenses.stream()
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
+            .toList();
+    }
+
+    @Override
     @Transactional
     public ExpenseResponseDto create(ExpenseRequestDto dto) {
         log.info("Service - Creating expense, DTO received: {}", dto);

@@ -57,6 +57,12 @@ public class ExpenseController {
         return ResponseEntity.ok(expenseService.getByDate(date));
     }
 
+    @GetMapping("/expense-category/{expenseCategoryId}")
+    public ResponseEntity<List<ExpenseResponseDto>> getByExpenseCategoryId(@PathVariable Long expenseCategoryId) {
+        validateId(expenseCategoryId);
+        return ResponseEntity.ok(expenseService.getByExpenseCategoryId(expenseCategoryId));
+    }
+
     @PostMapping
     public ResponseEntity<ExpenseResponseDto> create(@RequestBody @Valid ExpenseRequestDto requestDto) {
         log.info("POST - Expense received from body: {}", requestDto);
