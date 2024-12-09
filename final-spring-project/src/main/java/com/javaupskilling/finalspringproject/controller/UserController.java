@@ -45,9 +45,8 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<List<UserResponseDto>> searchUsersByName(@RequestParam String name) {
-        List<UserResponseDto> users = userService.getByName(name);
-        return ResponseEntity.ok(users);
+    public ResponseEntity<List<UserResponseDto>> getByName(@RequestParam String name) {
+        return ResponseEntity.ok(userService.getByName(name));
     }
 
     @PostMapping
