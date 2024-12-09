@@ -185,9 +185,10 @@ public class ExpenseControllerIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errors", hasSize(4)))
+            .andExpect(jsonPath("$.errors", hasSize(5)))
             .andExpect(jsonPath("$.errors", containsInAnyOrder(
                 containsString("Amount must be greater than zero"),
+                containsString("Date can only contain numbers spaces, and hyphens"),
                 containsString("Date must have 10 characters format: dd-MM-yyyy"),
                 containsString("ExpenseCategoryId cannot be null"),
                 containsString("UserId cannot be null")))
