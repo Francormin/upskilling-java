@@ -1,5 +1,7 @@
 package com.javaupskilling.finalspringproject.util;
 
+import com.javaupskilling.finalspringproject.dto.ExpenseCategoryRequestDto;
+import com.javaupskilling.finalspringproject.dto.ExpenseCategoryResponseDto;
 import com.javaupskilling.finalspringproject.dto.ExpenseRequestDto;
 import com.javaupskilling.finalspringproject.dto.ExpenseResponseDto;
 import com.javaupskilling.finalspringproject.dto.UserRequestDto;
@@ -9,6 +11,46 @@ import com.javaupskilling.finalspringproject.model.ExpenseCategory;
 import com.javaupskilling.finalspringproject.model.User;
 
 public class ConversionUtil {
+
+    // ---------------------------- ExpenseCategory Mappers ----------------------------
+
+    public static ExpenseCategoryResponseDto fromExpenseCategoryEntityToResponseDto(
+        ExpenseCategory expenseCategory) {
+
+        ExpenseCategoryResponseDto expenseCategoryResponseDto = new ExpenseCategoryResponseDto();
+        expenseCategoryResponseDto.setName(expenseCategory.getName());
+        expenseCategoryResponseDto.setDescription(expenseCategory.getDescription());
+        expenseCategoryResponseDto.setExpenses(expenseCategory.getExpenses()
+            .stream()
+            .map(ConversionUtil::fromExpenseEntityToResponseDto)
+            .toList());
+        return expenseCategoryResponseDto;
+
+    }
+
+    public static ExpenseCategory fromRequestDtoToExpenseCategoryEntity(
+        ExpenseCategoryRequestDto expenseCategoryRequestDto) {
+
+        ExpenseCategory expenseCategory = new ExpenseCategory();
+        expenseCategory.setName(expenseCategoryRequestDto.getName());
+        expenseCategory.setDescription(expenseCategoryRequestDto.getDescription());
+        expenseCategory.setExpenses(expenseCategoryRequestDto.getExpenses());
+        return expenseCategory;
+
+    }
+
+    public static ExpenseCategory fromRequestDtoToExpenseCategoryEntityUpdate(
+        ExpenseCategory existingExpenseCategory,
+        ExpenseCategoryRequestDto expenseCategoryRequestDto) {
+
+        existingExpenseCategory.setName(expenseCategoryRequestDto.getName());
+        existingExpenseCategory.setDescription(expenseCategoryRequestDto.getDescription());
+        existingExpenseCategory.setExpenses(expenseCategoryRequestDto.getExpenses());
+        return existingExpenseCategory;
+
+    }
+
+    // ----------------------------       User Mappers       ---------------------------
 
     public static UserResponseDto fromUserEntityToResponseDto(User user) {
         UserResponseDto userResponseDto = new UserResponseDto();
@@ -38,6 +80,8 @@ public class ConversionUtil {
         existingUser.setExpenses(userRequestDto.getExpenses());
         return existingUser;
     }
+
+    // ----------------------------      Expense Mappers      --------------------------
 
     public static ExpenseResponseDto fromExpenseEntityToResponseDto(Expense expense) {
         ExpenseResponseDto expenseResponseDto = new ExpenseResponseDto();
