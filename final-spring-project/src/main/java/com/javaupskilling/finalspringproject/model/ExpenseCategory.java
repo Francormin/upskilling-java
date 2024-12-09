@@ -27,6 +27,7 @@ public class ExpenseCategory {
     @Column(nullable = false)
     private String name;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @OneToMany(mappedBy = "expenseCategory")

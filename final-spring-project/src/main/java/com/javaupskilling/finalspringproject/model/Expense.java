@@ -30,6 +30,7 @@ public class Expense {
     @Column(nullable = false)
     private String date;
 
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @NotNull
