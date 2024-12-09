@@ -28,14 +28,28 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ResponseEntity<String> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+    public ResponseEntity<Map<String, Object>> handleHttpMessageNotReadableException(
+        HttpMessageNotReadableException ex) {
+
+        Map<String, Object> body = new HashMap<>();
+        String message = ex.getMostSpecificCause().getMessage();
+
+        if (message.contains("Cannot deserialize value of type `java.lang.Double`")) {
+            body.put("message", "Invalid value for 'amount'. It must be a numeric value.");
+        } else {
+            body.put(message, "Malformed JSON request.");
+        }
+        body.put("timestamp", LocalDateTime.now());
+
         log.error("Deserialization error: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            .body("Invalid input data: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+    public ResponseEntity<Map<String, Object>> handleMethodArgumentNotValidException(
+        MethodArgumentNotValidException ex) {
+
         Map<String, Object> body = new HashMap<>();
 
         List<String> errors = ex.getBindingResult()
@@ -49,19 +63,27 @@ public class GlobalExceptionHandler {
 
         log.error("MethodArgumentNotValidException - Body response sent to Client: {}", body);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<Map<String, Object>> handleIllegalArgumentException(IllegalArgumentException ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", ex.getMessage());
+        body.put("timestamp", LocalDateTime.now());
+
         log.error("IllegalArgument exception handler: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> handleGeneralException(Exception ex) {
+    public ResponseEntity<Map<String, Object>> handleGeneralException(Exception ex) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("message", ex.getMessage());
+        body.put("timestamp", LocalDateTime.now());
+
         log.error("General exception handler: {}", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("An error occurred: " + ex.getMessage());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
     }
 
 }
