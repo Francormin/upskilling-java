@@ -18,10 +18,11 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -71,7 +72,8 @@ class ExpenseCategoryServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> expenseCategoryService.getAll());
+            () -> expenseCategoryService.getAll()
+        );
 
         assertEquals(
             "ExpenseCategory: No expense categories found in the system",
@@ -104,9 +106,48 @@ class ExpenseCategoryServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> expenseCategoryService.getById(1L));
+            () -> expenseCategoryService.getById(1L)
+        );
+
         assertEquals("ExpenseCategory with ID 1 not found", exception.getMessage());
         verify(expenseCategoryRepository, times(1)).findById(anyLong());
+    }
+
+    @Test
+    void getByName_Success() {
+        // Given
+        String name = "vacation";
+        when(expenseCategoryRepository.findByNameContainingIgnoreCase(name))
+            .thenReturn(List.of(expenseCategory));
+
+        // When
+        List<ExpenseCategoryResponseDto> result = expenseCategoryService.getByName(name);
+
+        // Then
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals("Vacations", result.get(0).getName());
+        verify(expenseCategoryRepository, times(1))
+            .findByNameContainingIgnoreCase(name);
+    }
+
+    @Test
+    void getByName_ExpensesNotFound() {
+        // Given
+        when(expenseCategoryRepository.findByNameContainingIgnoreCase(anyString())).thenReturn(List.of());
+
+        // When & Then
+        EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
+            () -> expenseCategoryService.getByName("groceries")
+        );
+
+        assertEquals(
+            "ExpenseCategory: No expense categories with name containing 'groceries' in the system",
+            exception.getMessage()
+        );
+
+        verify(expenseCategoryRepository, times(1))
+            .findByNameContainingIgnoreCase(anyString());
     }
 
 }
