@@ -62,7 +62,9 @@ class UserServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> userService.getAll());
+            () -> userService.getAll()
+        );
+
         assertEquals("User: No users found in the system", exception.getMessage());
         verify(userRepository, times(1)).findAll();
     }
@@ -92,7 +94,9 @@ class UserServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> userService.getById(userId));
+            () -> userService.getById(userId)
+        );
+
         assertEquals("User with ID 1 not found", exception.getMessage());
         verify(userRepository, times(1)).findById(userId);
     }
@@ -130,7 +134,8 @@ class UserServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> userService.getByName(name));
+            () -> userService.getByName(name)
+        );
 
         assertEquals(
             "User: No users with name containing 'John' in the system",
@@ -205,7 +210,9 @@ class UserServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> userService.update(userId, userRequestDto));
+            () -> userService.update(userId, userRequestDto)
+        );
+
         assertEquals("User with ID 1 not found", exception.getMessage());
         verify(userRepository, times(1)).findById(userId);
     }
@@ -235,7 +242,9 @@ class UserServiceImplTest {
 
         // When & Then
         EntityNotFoundException exception = assertThrows(EntityNotFoundException.class,
-            () -> userService.delete(userId));
+            () -> userService.delete(userId)
+        );
+
         assertEquals("User with ID 1 not found", exception.getMessage());
         verify(userRepository, times(1)).existsById(userId);
         verify(expenseRepository, times(0)).findByUserId(anyLong());
