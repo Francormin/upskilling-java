@@ -185,8 +185,8 @@ class UserControllerIntegrationTest {
             .andExpect(status().isNotFound())
             .andExpect(jsonPath(
                 "$.message",
-                is("User: No users with name containing '" + searchName + "' in the system"))
-            );
+                is("User: No users with name containing '" + searchName + "' in the system")
+            ));
 
         verify(userService, times(1)).getByName(searchName);
     }
@@ -243,6 +243,8 @@ class UserControllerIntegrationTest {
                 containsString("Email must be a valid one"),
                 containsString("Email must have this format: test@example.com")
             )));
+
+        verify(userService, times(0)).create(invalidRequest);
     }
 
     @Test

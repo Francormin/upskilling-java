@@ -90,8 +90,8 @@ public class ExpenseControllerIntegrationTest {
             .andExpect(status().isNotFound())
             .andExpect(result -> Objects.equals(
                 result.getResponse().getErrorMessage(),
-                "\"Expense with ID 999 not found\"")
-            );
+                "\"Expense with ID 999 not found\""
+            ));
 
         verify(expenseService, times(1)).getById(999L);
     }
@@ -191,8 +191,8 @@ public class ExpenseControllerIntegrationTest {
                 containsString("Date can only contain numbers spaces, and hyphens"),
                 containsString("Date must have 10 characters format: dd-MM-yyyy"),
                 containsString("ExpenseCategoryId cannot be null"),
-                containsString("UserId cannot be null")))
-            );
+                containsString("UserId cannot be null")
+            )));
 
         verify(expenseService, times(0)).create(invalidRequest);
     }
