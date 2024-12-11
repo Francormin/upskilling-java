@@ -2,10 +2,6 @@ package com.javaupskilling.finalspringproject.controller;
 
 import com.javaupskilling.finalspringproject.dto.ExpenseCategoryRequestDto;
 import com.javaupskilling.finalspringproject.dto.ExpenseCategoryResponseDto;
-import com.javaupskilling.finalspringproject.dto.ExpenseResponseDto;
-import com.javaupskilling.finalspringproject.dto.UserRequestDto;
-import com.javaupskilling.finalspringproject.dto.UserResponseDto;
-import com.javaupskilling.finalspringproject.model.ExpenseCategory;
 import com.javaupskilling.finalspringproject.service.ExpenseCategoryService;
 
 import jakarta.validation.Valid;
