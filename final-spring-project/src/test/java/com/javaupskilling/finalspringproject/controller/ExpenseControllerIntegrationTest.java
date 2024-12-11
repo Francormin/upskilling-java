@@ -50,6 +50,8 @@ public class ExpenseControllerIntegrationTest {
     @MockBean
     private ExpenseService expenseService;
 
+    private static final String BASE_URL = "/api/v1/expenses";
+
     private ExpenseResponseDto createTestExpenseResponse() {
         ExpenseResponseDto expenseResponse = new ExpenseResponseDto();
         expenseResponse.setAmount(100.0);
@@ -71,7 +73,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("GET /api/v1/expenses")
+    @DisplayName("GET " + BASE_URL)
     class GetExpenses {
 
         @Test
@@ -84,7 +86,7 @@ public class ExpenseControllerIntegrationTest {
             when(expenseService.getAll()).thenReturn(expenses);
 
             // When & Then
-            mockMvc.perform(get("/api/v1/expenses"))
+            mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].amount", is(100.0)))
                 .andExpect(jsonPath("$[0].date", is("01-01-2024")))
@@ -103,7 +105,7 @@ public class ExpenseControllerIntegrationTest {
                 .willThrow(new EntityNotFoundException("Expense", "No expenses found in the system"));
 
             // When & Then
-            mockMvc.perform(get("/api/v1/expenses"))
+            mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath(
                     "$.message",
@@ -116,7 +118,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("GET /api/v1/expenses/{id}")
+    @DisplayName("GET " + BASE_URL + "/{id}")
     class GetExpenseById {
 
         @Test
@@ -127,7 +129,7 @@ public class ExpenseControllerIntegrationTest {
             when(expenseService.getById(anyLong())).thenReturn(testExpenseResponse);
 
             // When & Then
-            mockMvc.perform(get("/api/v1/expenses/{id}", 1L))
+            mockMvc.perform(get(BASE_URL + "/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.amount", is(100.0)))
                 .andExpect(jsonPath("$.date", is("01-01-2024")))
@@ -149,7 +151,7 @@ public class ExpenseControllerIntegrationTest {
             given(expenseService.getById(id)).willThrow(new EntityNotFoundException("Expense", id));
 
             // When & Then
-            mockMvc.perform(get("/api/v1/expenses/{id}", id))
+            mockMvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", is(expectedMessage)))
                 .andExpect(jsonPath("$.timestamp").exists());
@@ -161,7 +163,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("POST /api/v1/expenses")
+    @DisplayName("POST " + BASE_URL)
     class CreateExpenses {
 
         @Test
@@ -174,7 +176,7 @@ public class ExpenseControllerIntegrationTest {
             when(expenseService.create(testExpenseRequest)).thenReturn(testExpenseResponse);
 
             // When & Then
-            mockMvc.perform(post("/api/v1/expenses")
+            mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testExpenseRequest)))
                 .andExpect(status().isCreated())
@@ -202,7 +204,7 @@ public class ExpenseControllerIntegrationTest {
             invalidRequest.setAmount(amount);
 
             // When & Then
-            mockMvc.perform(post("/api/v1/expenses")
+            mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest())
@@ -231,7 +233,7 @@ public class ExpenseControllerIntegrationTest {
             invalidRequest.setDate(date);
 
             // When & Then
-            mockMvc.perform(post("/api/v1/expenses")
+            mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest())
@@ -255,7 +257,7 @@ public class ExpenseControllerIntegrationTest {
             invalidRequest.setUserId(null);
 
             // When & Then
-            mockMvc.perform(post("/api/v1/expenses")
+            mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest())
@@ -270,7 +272,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("PUT /api/v1/expenses/{id}")
+    @DisplayName("PUT " + BASE_URL + "/{id}")
     class UpdateExpenseById {
 
         @Test
@@ -284,7 +286,7 @@ public class ExpenseControllerIntegrationTest {
                 .thenReturn(testExpenseResponse);
 
             // When & Then
-            mockMvc.perform(put("/api/v1/expenses/{id}", 1L)
+            mockMvc.perform(put(BASE_URL + "/{id}", 1L)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testExpenseRequest)))
                 .andExpect(status().isOk())
@@ -311,7 +313,7 @@ public class ExpenseControllerIntegrationTest {
                 .willThrow(new EntityNotFoundException("Expense", id));
 
             // When & Then
-            mockMvc.perform(put("/api/v1/expenses/{id}", id)
+            mockMvc.perform(put(BASE_URL + "/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(testExpenseRequest)))
                 .andExpect(status().isNotFound())
@@ -324,7 +326,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
-    @DisplayName("DELETE /api/v1/expenses/{id}")
+    @DisplayName("DELETE " + BASE_URL + "/{id}")
     class DeleteExpenseById {
 
         @Test
@@ -334,7 +336,7 @@ public class ExpenseControllerIntegrationTest {
             doNothing().when(expenseService).delete(anyLong());
 
             // When & Then
-            mockMvc.perform(delete("/api/v1/expenses/{id}", 1L))
+            mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Expense deleted successfully"));
 
@@ -352,7 +354,7 @@ public class ExpenseControllerIntegrationTest {
             doThrow(new EntityNotFoundException("Expense", id)).when(expenseService).delete(id);
 
             // When & Then
-            mockMvc.perform(delete("/api/v1/expenses/{id}", id))
+            mockMvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", is(expectedMessage)));
 
