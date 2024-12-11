@@ -24,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -87,7 +88,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void getById_ShouldThrowException_WhenUserDoesNotExist() {
+    void getById_ShouldThrowException_WhenUserDoesNotExistWithId() {
         // Given
         Long userId = 1L;
         when(userRepository.findById(userId)).thenReturn(Optional.empty());
@@ -223,6 +224,7 @@ class UserServiceImplTest {
         Long userId = 1L;
         when(userRepository.existsById(userId)).thenReturn(true);
         when(expenseRepository.findByUserId(userId)).thenReturn(List.of(new Expense()));
+        doNothing().when(userRepository).deleteById(userId);
 
         // When
         userService.delete(userId);

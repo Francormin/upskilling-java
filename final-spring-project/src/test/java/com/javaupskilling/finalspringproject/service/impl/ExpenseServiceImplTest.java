@@ -25,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -73,7 +74,7 @@ class ExpenseServiceImplTest {
     private ExpenseRequestDto createExpenseRequestDto() {
         ExpenseRequestDto expenseRequestDto = new ExpenseRequestDto();
         expenseRequestDto.setAmount(100.0);
-        expenseRequestDto.setDate("2024-12-05");
+        expenseRequestDto.setDate("05-12-2024");
         expenseRequestDto.setDescription("Lunch");
         expenseRequestDto.setExpenseCategoryId(1L);
         expenseRequestDto.setUserId(1L);
@@ -83,7 +84,7 @@ class ExpenseServiceImplTest {
     private Expense createExpense() {
         Expense expense = new Expense();
         expense.setAmount(100.0);
-        expense.setDate("2024-12-05");
+        expense.setDate("05-12-2024");
         expense.setDescription("Lunch");
         expense.setExpenseCategory(expenseCategory);
         expense.setUser(user);
@@ -91,7 +92,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getAll_Success() {
+    void getAll_ShouldReturnListOfExpenses_WhenExpensesExist() {
         // Given
         Expense expense = createExpense();
         when(expenseRepository.findAll()).thenReturn(List.of(expense));
@@ -106,7 +107,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getAll_ExpensesNotFound() {
+    void getAll_ShouldThrowException_WhenNoExpensesExist() {
         // Given
         when(expenseRepository.findAll()).thenReturn(List.of());
 
@@ -120,7 +121,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getById_Success() {
+    void getById_ShouldReturnExpense_WhenExpenseExistsWithId() {
         // Given
         Expense expense = createExpense();
         expense.setId(1L);
@@ -136,7 +137,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getById_ExpenseNotFound() {
+    void getById_ShouldThrowException_WhenExpenseDoesNotExistWithId() {
         // Given
         when(expenseRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -150,7 +151,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getByUserId_Success() {
+    void getByUserId_ShouldReturnListOfExpenses_WhenExpensesExistWithUserId() {
         // Given
         Expense expense = createExpense();
         expense.setId(1L);
@@ -167,7 +168,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void getByUserId_ExpensesNotFound() {
+    void getByUserId_ShouldThrowException_WhenNoExpensesExistWithUserId() {
         // Given
         when(expenseRepository.findByUserId(anyLong())).thenReturn(List.of());
 
@@ -181,7 +182,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void create_Success() {
+    void create_ShouldSaveAndReturnExpense_WhenExpenseCategoryAndUserExist() {
         // Given
         Expense expense = createExpense();
 
@@ -200,7 +201,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void create_ExpenseCategoryNotFound() {
+    void create_ShouldThrowException_WhenExpenseCategoryDoesNotExist() {
         // Given
         when(expenseCategoryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -214,9 +215,10 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void delete_Success() {
+    void delete_ShouldDeleteExpense_WhenExpenseExists() {
         // Given
         when(expenseRepository.existsById(1L)).thenReturn(true);
+        doNothing().when(expenseRepository).deleteById(1L);
 
         // When
         expenseService.delete(1L);
@@ -227,7 +229,7 @@ class ExpenseServiceImplTest {
     }
 
     @Test
-    void delete_ExpenseNotFound() {
+    void delete_ShouldThrowException_WhenExpenseDoesNotExist() {
         // Given
         when(expenseRepository.existsById(anyLong())).thenReturn(false);
 
