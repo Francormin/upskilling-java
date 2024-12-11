@@ -50,7 +50,7 @@ public class ExpenseControllerIntegrationTest {
     private ExpenseService expenseService;
 
     @Test
-    @DisplayName("GET /api/v1/expenses - Should return list of expenses")
+    @DisplayName("GET /api/v1/expenses - Should return a list of expenses")
     void getAll_ShouldReturnListOfExpenses() throws Exception {
         // Given
         ExpenseResponseDto expense = new ExpenseResponseDto();
@@ -79,7 +79,7 @@ public class ExpenseControllerIntegrationTest {
 
     @Test
     @DisplayName("GET /api/v1/expenses - Should return not found when getting non existing expenses")
-    void getAll_shouldReturnNotFoundWhenGettingNonExistingExpenses() throws Exception {
+    void getAll_ShouldReturnNotFoundWhenGettingNonExistingExpenses() throws Exception {
         // Given
         Long nonExistingId = 999L;
         given(expenseService.getById(nonExistingId))
@@ -124,7 +124,7 @@ public class ExpenseControllerIntegrationTest {
 
     @Test
     @DisplayName("GET /api/v1/expenses/{id} - Should return not found when getting non existing expense")
-    void getById_shouldReturnNotFoundWhenGettingNonExistingExpense() throws Exception {
+    void getById_ShouldReturnNotFoundWhenGettingNonExistingExpense() throws Exception {
         // Given
         long nonExistingId = 999L;
         given(expenseService.getById(nonExistingId))
@@ -139,7 +139,7 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/expenses - Should create a new expense")
+    @DisplayName("POST /api/v1/expenses - Should create a new expense and return it")
     void create_ShouldReturnCreatedExpense() throws Exception {
         // Given
         ExpenseRequestDto request = new ExpenseRequestDto();
@@ -174,7 +174,7 @@ public class ExpenseControllerIntegrationTest {
 
     @Test
     @DisplayName("POST /api/v1/expenses - Should return bad request when creating expense with invalid data")
-    void create_shouldReturnBadRequestWhenCreatingExpenseWithInvalidData() throws Exception {
+    void create_ShouldReturnBadRequestWhenCreatingExpenseWithInvalidData() throws Exception {
         // Given
         ExpenseRequestDto invalidRequest = new ExpenseRequestDto();
         invalidRequest.setAmount(-10.0);
@@ -233,7 +233,7 @@ public class ExpenseControllerIntegrationTest {
 
     @Test
     @DisplayName("PUT /api/v1/expenses/{id} - Should return not found when updating non existing expense")
-    void update_shouldReturnNotFoundWhenUpdatingNonExistingExpense() throws Exception {
+    void update_ShouldReturnNotFoundWhenUpdatingNonExistingExpense() throws Exception {
         // Given
         Long nonExistingId = 999L;
         ExpenseRequestDto validRequest = new ExpenseRequestDto();
@@ -273,7 +273,7 @@ public class ExpenseControllerIntegrationTest {
 
     @Test
     @DisplayName("DELETE /api/v1/expenses/{id} - Should return not found when deleting non existing expense")
-    void delete_shouldReturnNotFoundWhenDeletingNonExistingExpense() throws Exception {
+    void delete_ShouldReturnNotFoundWhenDeletingNonExistingExpense() throws Exception {
         // Given
         Long nonExistingId = 999L;
         doThrow(new EntityNotFoundException("Expense", nonExistingId))
