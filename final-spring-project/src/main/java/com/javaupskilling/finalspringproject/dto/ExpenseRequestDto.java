@@ -15,7 +15,7 @@ public class ExpenseRequestDto {
     private Double amount;
 
     @NotBlank(message = "Date cannot be null nor blank")
-    @Pattern(regexp = "^[0-9 -]+$", message = "Date can only contain numbers spaces, and hyphens")
+    @Pattern(regexp = "^[0-9-]+$", message = "Date can only contain numbers and hyphens")
     @Size(min = 10, max = 10, message = "Date must have 10 characters format: dd-MM-yyyy")
     private String date;
 
