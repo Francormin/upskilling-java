@@ -7,7 +7,10 @@ import com.javaupskilling.finalspringproject.service.ExpenseService;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,11 +18,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
-import java.util.Objects;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -49,242 +50,316 @@ public class ExpenseControllerIntegrationTest {
     @MockBean
     private ExpenseService expenseService;
 
-    @Test
-    @DisplayName("GET /api/v1/expenses - Should return a list of expenses")
-    void getAll_ShouldReturnListOfExpenses() throws Exception {
-        // Given
-        ExpenseResponseDto expense = new ExpenseResponseDto();
-        expense.setAmount(100.0);
-        expense.setDate("01-01-2024");
-        expense.setDescription("Test Expense");
-        expense.setExpenseCategoryName("Food");
-        expense.setUserEmail("user@example.com");
-
-        List<ExpenseResponseDto> expenses = List.of(expense);
-
-        when(expenseService.getAll()).thenReturn(expenses);
-
-        // When & Then
-        mockMvc.perform(get("/api/v1/expenses")
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$[0].amount", is(100.0)))
-            .andExpect(jsonPath("$[0].date", is("01-01-2024")))
-            .andExpect(jsonPath("$[0].description", is("Test Expense")))
-            .andExpect(jsonPath("$[0].expenseCategoryName", is("Food")))
-            .andExpect(jsonPath("$[0].userEmail", is("user@example.com")));
-
-        verify(expenseService, times(1)).getAll();
+    private ExpenseResponseDto createTestExpenseResponse() {
+        ExpenseResponseDto expenseResponse = new ExpenseResponseDto();
+        expenseResponse.setAmount(100.0);
+        expenseResponse.setDate("01-01-2024");
+        expenseResponse.setDescription("Test Expense");
+        expenseResponse.setExpenseCategoryName("Food");
+        expenseResponse.setUserEmail("user@example.com");
+        return expenseResponse;
     }
 
-    @Test
-    @DisplayName("GET /api/v1/expenses - Should return not found when getting non existing expenses")
-    void getAll_ShouldReturnNotFoundWhenGettingNonExistingExpenses() throws Exception {
-        // Given
-        Long nonExistingId = 999L;
-        given(expenseService.getById(nonExistingId))
-            .willThrow(new EntityNotFoundException("Expense", nonExistingId));
-
-        // When & Then
-        mockMvc.perform(get("/api/v1/expenses/{id}", nonExistingId))
-            .andExpect(status().isNotFound())
-            .andExpect(result -> Objects.equals(
-                result.getResponse().getErrorMessage(),
-                "\"Expense with ID 999 not found\""
-            ));
-
-        verify(expenseService, times(1)).getById(999L);
+    private ExpenseRequestDto createTestExpenseRequest() {
+        ExpenseRequestDto expenseRequest = new ExpenseRequestDto();
+        expenseRequest.setAmount(100.0);
+        expenseRequest.setDate("01-01-2024");
+        expenseRequest.setDescription("Test Expense");
+        expenseRequest.setExpenseCategoryId(1L);
+        expenseRequest.setUserId(1L);
+        return expenseRequest;
     }
 
-    @Test
-    @DisplayName("GET /api/v1/expenses/{id} - Should return an expense by ID")
-    void getById_ShouldReturnExpense() throws Exception {
-        // Given
-        ExpenseResponseDto expense = new ExpenseResponseDto();
-        expense.setAmount(100.0);
-        expense.setDate("01-01-2024");
-        expense.setDescription("Test Expense");
-        expense.setExpenseCategoryName("Food");
-        expense.setUserEmail("user@example.com");
+    @Nested
+    @DisplayName("GET /api/v1/expenses")
+    class GetExpenses {
 
-        when(expenseService.getById(anyLong())).thenReturn(expense);
+        @Test
+        @DisplayName("Should return a list of expenses")
+        void getAll_ShouldReturnListOfExpenses() throws Exception {
+            // Given
+            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
+            List<ExpenseResponseDto> expenses = List.of(testExpenseResponse);
 
-        // When & Then
-        mockMvc.perform(get("/api/v1/expenses/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.amount", is(100.0)))
-            .andExpect(jsonPath("$.date", is("01-01-2024")))
-            .andExpect(jsonPath("$.description", is("Test Expense")))
-            .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
-            .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+            when(expenseService.getAll()).thenReturn(expenses);
 
-        verify(expenseService, times(1)).getById(anyLong());
+            // When & Then
+            mockMvc.perform(get("/api/v1/expenses"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].amount", is(100.0)))
+                .andExpect(jsonPath("$[0].date", is("01-01-2024")))
+                .andExpect(jsonPath("$[0].description", is("Test Expense")))
+                .andExpect(jsonPath("$[0].expenseCategoryName", is("Food")))
+                .andExpect(jsonPath("$[0].userEmail", is("user@example.com")));
+
+            verify(expenseService, times(1)).getAll();
+        }
+
+        @Test
+        @DisplayName("Should return not found for non-existing expenses")
+        void getAll_ShouldReturnNotFoundForNonExistingExpenses() throws Exception {
+            // Given
+            given(expenseService.getAll())
+                .willThrow(new EntityNotFoundException("Expense", "No expenses found in the system"));
+
+            // When & Then
+            mockMvc.perform(get("/api/v1/expenses"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath(
+                    "$.message",
+                    is("Expense: No expenses found in the system")
+                ));
+
+            verify(expenseService, times(1)).getAll();
+        }
+
     }
 
-    @Test
-    @DisplayName("GET /api/v1/expenses/{id} - Should return not found when getting non existing expense")
-    void getById_ShouldReturnNotFoundWhenGettingNonExistingExpense() throws Exception {
-        // Given
-        long nonExistingId = 999L;
-        given(expenseService.getById(nonExistingId))
-            .willThrow(new EntityNotFoundException("Expense", nonExistingId));
+    @Nested
+    @DisplayName("GET /api/v1/expenses/{id}")
+    class GetExpenseById {
 
-        // When & Then
-        mockMvc.perform(get("/api/v1/expenses/{id}", nonExistingId))
-            .andExpect(status().isNotFound())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message", is("Expense with ID 999 not found")))
-            .andExpect(jsonPath("$.timestamp").exists());
+        @Test
+        @DisplayName("Should return an expense by ID")
+        void getById_ShouldReturnExpense() throws Exception {
+            // Given
+            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
+            when(expenseService.getById(anyLong())).thenReturn(testExpenseResponse);
+
+            // When & Then
+            mockMvc.perform(get("/api/v1/expenses/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amount", is(100.0)))
+                .andExpect(jsonPath("$.date", is("01-01-2024")))
+                .andExpect(jsonPath("$.description", is("Test Expense")))
+                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
+                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+
+            verify(expenseService, times(1)).getById(anyLong());
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({"999, Expense with ID 999 not found", "1000, Expense with ID 1000 not found"})
+        void getById_ShouldReturnNotFoundForNonExistingExpense(
+            Long id,
+            String expectedMessage) throws Exception {
+
+            // Given
+            given(expenseService.getById(id)).willThrow(new EntityNotFoundException("Expense", id));
+
+            // When & Then
+            mockMvc.perform(get("/api/v1/expenses/{id}", id))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", is(expectedMessage)))
+                .andExpect(jsonPath("$.timestamp").exists());
+
+            verify(expenseService, times(1)).getById(id);
+
+        }
+
     }
 
-    @Test
-    @DisplayName("POST /api/v1/expenses - Should create a new expense and return it")
-    void create_ShouldReturnCreatedExpense() throws Exception {
-        // Given
-        ExpenseRequestDto request = new ExpenseRequestDto();
-        request.setAmount(200.0);
-        request.setDate("02-01-2024");
-        request.setDescription("New Expense");
-        request.setExpenseCategoryId(1L);
-        request.setUserId(1L);
+    @Nested
+    @DisplayName("POST /api/v1/expenses")
+    class CreateExpenses {
 
-        ExpenseResponseDto response = new ExpenseResponseDto();
-        response.setAmount(200.0);
-        response.setDate("02-01-2024");
-        response.setDescription("New Expense");
-        response.setExpenseCategoryName("Utilities");
-        response.setUserEmail("user@example.com");
+        @Test
+        @DisplayName("Should create a new expense and return it")
+        void create_ShouldReturnCreatedExpense() throws Exception {
+            // Given
+            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
+            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
 
-        when(expenseService.create(any(ExpenseRequestDto.class))).thenReturn(response);
+            when(expenseService.create(testExpenseRequest)).thenReturn(testExpenseResponse);
 
-        // When & Then
-        mockMvc.perform(post("/api/v1/expenses")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.amount", is(200.0)))
-            .andExpect(jsonPath("$.date", is("02-01-2024")))
-            .andExpect(jsonPath("$.description", is("New Expense")))
-            .andExpect(jsonPath("$.expenseCategoryName", is("Utilities")))
-            .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+            // When & Then
+            mockMvc.perform(post("/api/v1/expenses")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.amount", is(100.0)))
+                .andExpect(jsonPath("$.date", is("01-01-2024")))
+                .andExpect(jsonPath("$.description", is("Test Expense")))
+                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
+                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
 
-        verify(expenseService, times(1)).create(any(ExpenseRequestDto.class));
+            verify(expenseService, times(1)).create(testExpenseRequest);
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return bad request for invalid amount")
+        @CsvSource({
+            ", Amount cannot be null",
+            "-10.0, Amount must be greater than zero"
+        })
+        void create_ShouldReturnBadRequestForNegativeAmount(
+            Double amount,
+            String expectedMessage) throws Exception {
+
+            // Given
+            ExpenseRequestDto invalidRequest = createTestExpenseRequest();
+            invalidRequest.setAmount(amount);
+
+            // When & Then
+            mockMvc.perform(post("/api/v1/expenses")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(
+                    "$.errors",
+                    containsInAnyOrder(containsString(expectedMessage))
+                ));
+
+            verify(expenseService, times(0)).create(any());
+
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return bad request for invalid date")
+        @CsvSource({
+            ", Date cannot be null nor blank",
+            "21453-date, Date can only contain numbers and hyphens",
+            "01-01-20, Date must have 10 characters format: dd-MM-yyyy"
+        })
+        void create_ShouldReturnBadRequestForInvalidDate(
+            String date,
+            String expectedMessage) throws Exception {
+
+            // Given
+            ExpenseRequestDto invalidRequest = createTestExpenseRequest();
+            invalidRequest.setDate(date);
+
+            // When & Then
+            mockMvc.perform(post("/api/v1/expenses")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(
+                    "$.errors",
+                    containsInAnyOrder(containsString(expectedMessage))
+                ));
+
+            verify(expenseService, times(0)).create(any());
+
+        }
+
+        @Test
+        @DisplayName("Should return bad request for not providing expenseCategoryId nor userId")
+        void create_ShouldReturnBadRequestForNotProvidingExpenseCategoryIdNorUserId() throws Exception {
+            // Given
+            ExpenseRequestDto invalidRequest = createTestExpenseRequest();
+            invalidRequest.setAmount(15.0);
+            invalidRequest.setDate("06-08-2024");
+            invalidRequest.setExpenseCategoryId(null);
+            invalidRequest.setUserId(null);
+
+            // When & Then
+            mockMvc.perform(post("/api/v1/expenses")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors", containsInAnyOrder(
+                    containsString("ExpenseCategoryId cannot be null"),
+                    containsString("UserId cannot be null")
+                )));
+
+            verify(expenseService, times(0)).create(any());
+        }
+
     }
 
-    @Test
-    @DisplayName("POST /api/v1/expenses - Should return bad request when creating expense with invalid data")
-    void create_ShouldReturnBadRequestWhenCreatingExpenseWithInvalidData() throws Exception {
-        // Given
-        ExpenseRequestDto invalidRequest = new ExpenseRequestDto();
-        invalidRequest.setAmount(-10.0);
-        invalidRequest.setDate("invalid-date");
+    @Nested
+    @DisplayName("PUT /api/v1/expenses/{id}")
+    class UpdateExpenseById {
 
-        // When & Then
-        mockMvc.perform(post("/api/v1/expenses")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(invalidRequest)))
-            .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.errors", hasSize(5)))
-            .andExpect(jsonPath("$.errors", containsInAnyOrder(
-                containsString("Amount must be greater than zero"),
-                containsString("Date can only contain numbers spaces, and hyphens"),
-                containsString("Date must have 10 characters format: dd-MM-yyyy"),
-                containsString("ExpenseCategoryId cannot be null"),
-                containsString("UserId cannot be null")
-            )));
+        @Test
+        @DisplayName("Should update an existing expense")
+        void update_ShouldReturnUpdatedExpense() throws Exception {
+            // Given
+            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
+            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
 
-        verify(expenseService, times(0)).create(invalidRequest);
+            when(expenseService.update(anyLong(), any(ExpenseRequestDto.class)))
+                .thenReturn(testExpenseResponse);
+
+            // When & Then
+            mockMvc.perform(put("/api/v1/expenses/{id}", 1L)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.amount", is(100.0)))
+                .andExpect(jsonPath("$.date", is("01-01-2024")))
+                .andExpect(jsonPath("$.description", is("Test Expense")))
+                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
+                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+
+            verify(expenseService, times(1))
+                .update(anyLong(), any(ExpenseRequestDto.class));
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({"999, Expense with ID 999 not found", "1000, Expense with ID 1000 not found"})
+        void update_ShouldReturnNotFoundForNonExistingExpense(
+            Long id,
+            String expectedMessage) throws Exception {
+
+            // Given
+            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
+            given(expenseService.update(id, testExpenseRequest))
+                .willThrow(new EntityNotFoundException("Expense", id));
+
+            // When & Then
+            mockMvc.perform(put("/api/v1/expenses/{id}", id)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", is(expectedMessage)));
+
+            verify(expenseService, times(1)).update(id, testExpenseRequest);
+
+        }
+
     }
 
-    @Test
-    @DisplayName("PUT /api/v1/expenses/{id} - Should update an existing expense")
-    void update_ShouldReturnUpdatedExpense() throws Exception {
-        // Given
-        ExpenseRequestDto request = new ExpenseRequestDto();
-        request.setAmount(300.0);
-        request.setDate("03-01-2024");
-        request.setDescription("Updated Expense");
-        request.setExpenseCategoryId(2L);
-        request.setUserId(2L);
+    @Nested
+    @DisplayName("DELETE /api/v1/expenses/{id}")
+    class DeleteExpenseById {
 
-        ExpenseResponseDto response = new ExpenseResponseDto();
-        response.setAmount(300.0);
-        response.setDate("03-01-2024");
-        response.setDescription("Updated Expense");
-        response.setExpenseCategoryName("Travel");
-        response.setUserEmail("updated.user@example.com");
+        @Test
+        @DisplayName("Should delete an existing expense")
+        void delete_ShouldReturnSuccessMessage() throws Exception {
+            // Given
+            doNothing().when(expenseService).delete(anyLong());
 
-        when(expenseService.update(anyLong(), any(ExpenseRequestDto.class))).thenReturn(response);
+            // When & Then
+            mockMvc.perform(delete("/api/v1/expenses/{id}", 1L))
+                .andExpect(status().isOk())
+                .andExpect(content().string("Expense deleted successfully"));
 
-        // When & Then
-        mockMvc.perform(put("/api/v1/expenses/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.amount", is(300.0)))
-            .andExpect(jsonPath("$.date", is("03-01-2024")))
-            .andExpect(jsonPath("$.description", is("Updated Expense")))
-            .andExpect(jsonPath("$.expenseCategoryName", is("Travel")))
-            .andExpect(jsonPath("$.userEmail", is("updated.user@example.com")));
+            verify(expenseService, times(1)).delete(anyLong());
+        }
 
-        verify(expenseService, times(1)).update(anyLong(), any(ExpenseRequestDto.class));
-    }
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({"999, Expense with ID 999 not found", "1000, Expense with ID 1000 not found"})
+        void delete_ShouldReturnNotFoundForNonExistingExpense(
+            Long id,
+            String expectedMessage) throws Exception {
 
-    @Test
-    @DisplayName("PUT /api/v1/expenses/{id} - Should return not found when updating non existing expense")
-    void update_ShouldReturnNotFoundWhenUpdatingNonExistingExpense() throws Exception {
-        // Given
-        Long nonExistingId = 999L;
-        ExpenseRequestDto validRequest = new ExpenseRequestDto();
-        validRequest.setAmount(100.0);
-        validRequest.setDate("10-10-2024");
-        validRequest.setDescription("Description");
-        validRequest.setExpenseCategoryId(1L);
-        validRequest.setUserId(1L);
+            // Given
+            doThrow(new EntityNotFoundException("Expense", id)).when(expenseService).delete(id);
 
-        given(expenseService.update(nonExistingId, validRequest))
-            .willThrow(new EntityNotFoundException("Expense", nonExistingId));
+            // When & Then
+            mockMvc.perform(delete("/api/v1/expenses/{id}", id))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message", is(expectedMessage)));
 
-        // When & Then
-        mockMvc.perform(put("/api/v1/expenses/{id}", nonExistingId)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(validRequest)))
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message", is("Expense with ID 999 not found")));
+            verify(expenseService, times(1)).delete(id);
 
-        verify(expenseService, times(1)).update(nonExistingId, validRequest);
-    }
+        }
 
-    @Test
-    @DisplayName("DELETE /api/v1/expenses/{id} - Should delete an expense")
-    void delete_ShouldReturnSuccessMessage() throws Exception {
-        // Given
-        doNothing().when(expenseService).delete(anyLong());
-
-        // When & Then
-        mockMvc.perform(delete("/api/v1/expenses/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().string("Expense deleted successfully"));
-
-        verify(expenseService, times(1)).delete(anyLong());
-    }
-
-    @Test
-    @DisplayName("DELETE /api/v1/expenses/{id} - Should return not found when deleting non existing expense")
-    void delete_ShouldReturnNotFoundWhenDeletingNonExistingExpense() throws Exception {
-        // Given
-        Long nonExistingId = 999L;
-        doThrow(new EntityNotFoundException("Expense", nonExistingId))
-            .when(expenseService).delete(nonExistingId);
-
-        // When & Then
-        mockMvc.perform(delete("/api/v1/expenses/{id}", nonExistingId))
-            .andExpect(status().isNotFound())
-            .andExpect(jsonPath("$.message", is("Expense with ID 999 not found")));
-
-        verify(expenseService, times(1)).delete(nonExistingId);
     }
 
 }
