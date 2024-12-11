@@ -175,8 +175,8 @@ class UserControllerIntegrationTest {
         // Given
         String searchName = "NonExistentName";
         given(userService.getByName(searchName)).willThrow(new EntityNotFoundException(
-            "User", "No users with name containing '" + searchName + "' in the system")
-        );
+            "User", "No users with name containing '" + searchName + "' in the system"
+        ));
 
         // When & Then
         mockMvc.perform(get("/api/v1/users/search")
@@ -192,7 +192,7 @@ class UserControllerIntegrationTest {
     }
 
     @Test
-    @DisplayName("POST /api/v1/users - Should create a new user")
+    @DisplayName("POST /api/v1/users - Should create a new user and return it")
     void create_ShouldReturnCreatedUser() throws Exception {
         // Given
         UserRequestDto userRequest = createUserRequestDto(
@@ -237,7 +237,7 @@ class UserControllerIntegrationTest {
             .andExpect(jsonPath("$.errors", hasSize(6)))
             .andExpect(jsonPath("$.errors", containsInAnyOrder(
                 containsString("Name cannot be null nor blank"),
-                containsString("Name can only contain letters"),
+                containsString("Name can only contain letters and spaces"),
                 containsString("Name must have a minimum of 2 letters"),
                 containsString("Surname cannot be null nor blank"),
                 containsString("Email must be a valid one"),
