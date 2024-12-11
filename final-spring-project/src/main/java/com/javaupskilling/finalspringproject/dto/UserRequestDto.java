@@ -15,7 +15,7 @@ import java.util.List;
 public class UserRequestDto {
 
     @NotBlank(message = "Name cannot be null nor blank")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Name can only contain letters")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name can only contain letters and spaces")
     @Size(min = 2, message = "Name must have a minimum of 2 letters")
     private String name;
 
@@ -24,7 +24,7 @@ public class UserRequestDto {
         regexp = "^[\\p{L}\\s'-]+$",
         message = "Surname can only contain letters, spaces, hyphens, and apostrophes"
     )
-    @Size(min = 2, message = "Surname must have a minimum of 2 letters")
+    @Size(min = 2, message = "Surname must have a minimum of 2 characters")
     private String surname;
 
     @Email(message = "Email must be a valid one")

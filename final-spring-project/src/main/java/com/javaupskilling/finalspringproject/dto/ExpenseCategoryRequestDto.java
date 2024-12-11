@@ -14,7 +14,7 @@ import java.util.List;
 public class ExpenseCategoryRequestDto {
 
     @NotBlank(message = "Name cannot be null nor blank")
-    @Pattern(regexp = "^[a-zA-Z]+$", message = "Name can only contain letters")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "Name can only contain letters and spaces")
     @Size(min = 3, message = "Name must have a minimum of 3 letters")
     private String name;
 
@@ -25,6 +25,6 @@ public class ExpenseCategoryRequestDto {
     @Size(min = 5, message = "Description must have a minimum of 5 characters")
     private String description;
 
-    private final List<Expense> expenses = new ArrayList<>();
+    private List<Expense> expenses = new ArrayList<>();
 
 }
