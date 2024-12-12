@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -19,7 +21,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
@@ -90,13 +91,14 @@ class ExpenseCategoryControllerIntegrationTest {
         }
 
         @Test
-        @DisplayName("Should return not found when there are no expense categories in the system")
-        void getAll_ShouldReturnNotFoundWhenThereAreNoExpenseCategoriesInTheSystem() throws Exception {
+        @DisplayName("Should return not found for non-existing expense categories")
+        void getAll_ShouldReturnNotFoundForNonExistingExpenseCategories() throws Exception {
             // Given
-            given(expenseCategoryService.getAll()).willThrow(new EntityNotFoundException(
-                "ExpenseCategory",
-                "No expense categories found in the system"
-            ));
+            given(expenseCategoryService.getAll())
+                .willThrow(new EntityNotFoundException(
+                    "ExpenseCategory",
+                    "No expense categories found in the system"
+                ));
 
             // When & Then
             mockMvc.perform(get(BASE_URL))
@@ -133,23 +135,28 @@ class ExpenseCategoryControllerIntegrationTest {
             verify(expenseCategoryService, times(1)).getById(anyLong());
         }
 
-        @Test
-        @DisplayName("Should return not found when when getting non existing expense category")
-        void getById_ShouldReturnNotFoundWhenGettingNonExistingExpenseCategory() throws Exception {
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({
+            "99, ExpenseCategory with ID 99 not found",
+            "100, ExpenseCategory with ID 100 not found"
+        })
+        void getById_ShouldReturnNotFoundForNonExistingExpenseCategory(
+            Long id,
+            String expectedMessage) throws Exception {
+
             // Given
-            Long nonExistingId = 99L;
-            given(expenseCategoryService.getById(nonExistingId))
-                .willThrow(new EntityNotFoundException("ExpenseCategory", nonExistingId));
+            given(expenseCategoryService.getById(id))
+                .willThrow(new EntityNotFoundException("ExpenseCategory", id));
 
             // When & Then
-            mockMvc.perform(get(BASE_URL + "/{id}", nonExistingId))
+            mockMvc.perform(get(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(
-                    "$.message",
-                    is("ExpenseCategory with ID 99 not found")
-                ));
+                .andExpect(jsonPath("$.message", is(expectedMessage)))
+                .andExpect(jsonPath("$.timestamp").exists());
 
-            verify(expenseCategoryService, times(1)).getById(nonExistingId);
+            verify(expenseCategoryService, times(1)).getById(id);
+
         }
 
     }
@@ -228,38 +235,68 @@ class ExpenseCategoryControllerIntegrationTest {
                     .value(expenseCategoryResponseDto.getName()))
                 .andExpect(jsonPath("$.description")
                     .value(expenseCategoryResponseDto.getDescription()))
-                .andExpect(jsonPath("$.expenses.size()")
-                    .value(0));
+                .andExpect(jsonPath("$.expenses.size()").value(0));
 
             verify(expenseCategoryService, times(1))
                 .create(expenseCategoryRequest);
         }
 
-        @Test
-        @DisplayName("Should return bad request for invalid data")
-        void create_ShouldReturnBadRequestForInvalidData() throws Exception {
+        @ParameterizedTest
+        @DisplayName("Should return bad request for invalid name")
+        @CsvSource({
+            ", Name cannot be null nor blank",
+            "43invalid name36, Name can only contain letters and spaces",
+            "no, Name must have a minimum of 3 letters"
+        })
+        void create_ShouldReturnBadRequestForInvalidName(
+            String name,
+            String expectedMessage) throws Exception {
+
             // Given
-            ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
-            expenseCategoryRequest.setName("");
-            expenseCategoryRequest.setDescription("%$!&");
+            ExpenseCategoryRequestDto invalidRequest = createExpenseCategoryRequest();
+            invalidRequest.setName(name);
 
             // When & Then
             mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(expenseCategoryRequest)))
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors", hasSize(5)))
-                .andExpect(jsonPath("$.errors", containsInAnyOrder(
-                    containsString("Name cannot be null nor blank"),
-                    containsString("Name can only contain letters and spaces"),
-                    containsString("Name must have a minimum of 3 letters"),
-                    containsString("Description can only contain letters, spaces, and the " +
-                        "following punctuation marks: . , : ;"),
-                    containsString("Description must have a minimum of 5 characters")
-                )));
+                .andExpect(jsonPath(
+                    "$.errors",
+                    containsInAnyOrder(containsString(expectedMessage))
+                ));
 
-            verify(expenseCategoryService, times(0))
-                .create(expenseCategoryRequest);
+            verify(expenseCategoryService, times(0)).create(invalidRequest);
+
+        }
+
+        @ParameterizedTest
+        @DisplayName("Should return bad request for invalid description")
+        @CsvSource({
+            "%$!&=, Description can only contain letters, spaces, and the following punctuation " +
+                "marks: . , : ;",
+            "soon, Description must have a minimum of 5 characters"
+        })
+        void create_ShouldReturnBadRequestForInvalidDescription(
+            String description,
+            String expectedMessage) throws Exception {
+
+            // Given
+            ExpenseCategoryRequestDto invalidRequest = createExpenseCategoryRequest();
+            invalidRequest.setDescription(description);
+
+            // When & Then
+            mockMvc.perform(post(BASE_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath(
+                    "$.errors",
+                    containsInAnyOrder(containsString(expectedMessage))
+                ));
+
+            verify(expenseCategoryService, times(0)).create(invalidRequest);
+
         }
 
     }
@@ -293,28 +330,31 @@ class ExpenseCategoryControllerIntegrationTest {
                 .update(1L, expenseCategoryRequest);
         }
 
-        @Test
-        @DisplayName("Should return not found when updating non existing expense category")
-        void update_shouldReturnNotFoundWhenUpdatingNonExistingExpenseCategory() throws Exception {
-            // Given
-            Long nonExistingId = 99L;
-            ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({
+            "99, ExpenseCategory with ID 99 not found",
+            "100, ExpenseCategory with ID 100 not found"
+        })
+        void update_shouldReturnNotFoundForNonExistingExpenseCategory(
+            Long id,
+            String expectedMessage) throws Exception {
 
-            given(expenseCategoryService.update(nonExistingId, expenseCategoryRequest))
-                .willThrow(new EntityNotFoundException("ExpenseCategory", nonExistingId));
+            // Given
+            ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
+            given(expenseCategoryService.update(id, expenseCategoryRequest))
+                .willThrow(new EntityNotFoundException("ExpenseCategory", id));
 
             // When & Then
-            mockMvc.perform(put(BASE_URL + "/{id}", nonExistingId)
+            mockMvc.perform(put(BASE_URL + "/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(expenseCategoryRequest)))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(
-                    "$.message",
-                    is("ExpenseCategory with ID 99 not found")
-                ));
+                .andExpect(jsonPath("$.message", is(expectedMessage)));
 
             verify(expenseCategoryService, times(1))
-                .update(nonExistingId, expenseCategoryRequest);
+                .update(id, expenseCategoryRequest);
+
         }
 
     }
@@ -324,7 +364,7 @@ class ExpenseCategoryControllerIntegrationTest {
     class DeleteExpenseById {
 
         @Test
-        @DisplayName("Should delete an expense category")
+        @DisplayName("Should delete an existing expense category")
         void delete_ShouldReturnSuccessMessage() throws Exception {
             // Given
             doNothing().when(expenseCategoryService).delete(anyLong());
@@ -337,23 +377,27 @@ class ExpenseCategoryControllerIntegrationTest {
             verify(expenseCategoryService, times(1)).delete(anyLong());
         }
 
-        @Test
-        @DisplayName("Should return not found when deleting non existing expense category")
-        void delete_ShouldReturnNotFoundWhenDeletingNonExistingExpenseCategory() throws Exception {
+        @ParameterizedTest
+        @DisplayName("Should return not found for non-existing ID")
+        @CsvSource({
+            "99, ExpenseCategory with ID 99 not found",
+            "100, ExpenseCategory with ID 100 not found"
+        })
+        void delete_ShouldReturnNotFoundForNonExistingExpenseCategory(
+            Long id,
+            String expectedMessage) throws Exception {
+
             // Given
-            Long nonExistingId = 99L;
-            doThrow(new EntityNotFoundException("ExpenseCategory", nonExistingId))
-                .when(expenseCategoryService).delete(nonExistingId);
+            doThrow(new EntityNotFoundException("ExpenseCategory", id))
+                .when(expenseCategoryService).delete(id);
 
             // When & Then
-            mockMvc.perform(delete(BASE_URL + "/{id}", nonExistingId))
+            mockMvc.perform(delete(BASE_URL + "/{id}", id))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath(
-                    "$.message",
-                    is("ExpenseCategory with ID 99 not found")
-                ));
+                .andExpect(jsonPath("$.message", is(expectedMessage)));
 
-            verify(expenseCategoryService, times(1)).delete(nonExistingId);
+            verify(expenseCategoryService, times(1)).delete(id);
+
         }
 
     }
