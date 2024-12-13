@@ -22,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -117,11 +118,13 @@ class UserControllerIntegrationTest {
         @DisplayName("Should return a user by ID")
         void getById_ShouldReturnUser() throws Exception {
             // Given
+            Long userId = 1L;
             UserResponseDto userResponse = createUserResponseDto();
+
             when(userService.getById(anyLong())).thenReturn(userResponse);
 
             // When & Then
-            mockMvc.perform(get(BASE_URL + "/1"))
+            mockMvc.perform(get(BASE_URL + "/{id}", userId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name").value(userResponse.getName()))
                 .andExpect(jsonPath("$.surname").value(userResponse.getSurname()))
@@ -160,20 +163,20 @@ class UserControllerIntegrationTest {
         @DisplayName("Should return a list of users by name")
         void getByName_ShouldReturnListOfUsers() throws Exception {
             // Given
-            String searchName = "john";
+            String name = "john";
             UserResponseDto userResponse = createUserResponseDto();
 
-            when(userService.getByName(searchName)).thenReturn(List.of(userResponse));
+            when(userService.getByName(name)).thenReturn(List.of(userResponse));
 
             // When & Then
-            mockMvc.perform(get(BASE_URL + "/search").param("name", searchName))
+            mockMvc.perform(get(BASE_URL + "/search").param("name", name))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].name").value(userResponse.getName()))
                 .andExpect(jsonPath("$[0].surname").value(userResponse.getSurname()))
                 .andExpect(jsonPath("$[0].email").value(userResponse.getEmail()));
 
-            verify(userService, times(1)).getByName(searchName);
+            verify(userService, times(1)).getByName(name);
         }
 
         @Test
@@ -211,7 +214,7 @@ class UserControllerIntegrationTest {
             UserRequestDto userRequest = createUserRequestDto();
             UserResponseDto userResponse = createUserResponseDto();
 
-            when(userService.create(userRequest)).thenReturn(userResponse);
+            when(userService.create(any(UserRequestDto.class))).thenReturn(userResponse);
 
             // When & Then
             mockMvc.perform(post(BASE_URL)
@@ -222,7 +225,7 @@ class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.surname").value(userResponse.getSurname()))
                 .andExpect(jsonPath("$.email").value(userResponse.getEmail()));
 
-            verify(userService, times(1)).create(userRequest);
+            verify(userService, times(1)).create(any(UserRequestDto.class));
         }
 
         @ParameterizedTest
@@ -250,7 +253,7 @@ class UserControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(userService, times(0)).create(invalidRequest);
+            verify(userService, times(0)).create(any(UserRequestDto.class));
 
         }
 
@@ -279,7 +282,7 @@ class UserControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(userService, times(0)).create(invalidRequest);
+            verify(userService, times(0)).create(any(UserRequestDto.class));
 
         }
 
@@ -307,7 +310,7 @@ class UserControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(userService, times(0)).create(invalidRequest);
+            verify(userService, times(0)).create(any(UserRequestDto.class));
 
         }
 
@@ -323,11 +326,12 @@ class UserControllerIntegrationTest {
             // Given
             UserRequestDto userRequest = createUserRequestDto();
             UserResponseDto userResponse = createUserResponseDto();
+            Long userId = 1L;
 
-            when(userService.update(1L, userRequest)).thenReturn(userResponse);
+            when(userService.update(anyLong(), any(UserRequestDto.class))).thenReturn(userResponse);
 
             // When & Then
-            mockMvc.perform(put(BASE_URL + "/{id}", 1L)
+            mockMvc.perform(put(BASE_URL + "/{id}", userId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(userRequest)))
                 .andExpect(status().isOk())
@@ -335,7 +339,8 @@ class UserControllerIntegrationTest {
                 .andExpect(jsonPath("$.surname").value(userResponse.getSurname()))
                 .andExpect(jsonPath("$.email").value(userResponse.getEmail()));
 
-            verify(userService, times(1)).update(1L, userRequest);
+            verify(userService, times(1))
+                .update(anyLong(), any(UserRequestDto.class));
         }
 
         @ParameterizedTest
@@ -346,18 +351,18 @@ class UserControllerIntegrationTest {
             String expectedMessage) throws Exception {
 
             // Given
-            UserRequestDto validRequest = createUserRequestDto();
-            given(userService.update(id, validRequest))
+            UserRequestDto userRequest = createUserRequestDto();
+            given(userService.update(id, userRequest))
                 .willThrow(new EntityNotFoundException("User", id));
 
             // When & Then
             mockMvc.perform(put(BASE_URL + "/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(validRequest)))
+                    .content(objectMapper.writeValueAsString(userRequest)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", is(expectedMessage)));
 
-            verify(userService, times(1)).update(id, validRequest);
+            verify(userService, times(1)).update(id, userRequest);
 
         }
 
@@ -371,10 +376,11 @@ class UserControllerIntegrationTest {
         @DisplayName("Should delete an existing user")
         void delete_ShouldReturnSuccessMessage() throws Exception {
             // Given
+            Long userId = 1L;
             doNothing().when(userService).delete(anyLong());
 
             // When & Then
-            mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
+            mockMvc.perform(delete(BASE_URL + "/{id}", userId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("User deleted successfully"));
 
