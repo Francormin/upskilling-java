@@ -76,17 +76,17 @@ class ExpenseCategoryControllerIntegrationTest {
         @DisplayName("Should return a list of expense categories")
         void getAll_ShouldReturnListOfExpenseCategories() throws Exception {
             // Given
-            ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
-            when(expenseCategoryService.getAll()).thenReturn(List.of(expenseCategoryResponseDto));
+            ExpenseCategoryResponseDto expenseCategoryResponse = createExpenseCategoryResponse();
+            when(expenseCategoryService.getAll()).thenReturn(List.of(expenseCategoryResponse));
 
             // When & Then
             mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].name")
-                    .value(expenseCategoryResponseDto.getName()))
+                    .value(expenseCategoryResponse.getName()))
                 .andExpect(jsonPath("$[0].description")
-                    .value(expenseCategoryResponseDto.getDescription()));
+                    .value(expenseCategoryResponse.getDescription()));
 
             verify(expenseCategoryService, times(1)).getAll();
         }
@@ -123,17 +123,17 @@ class ExpenseCategoryControllerIntegrationTest {
         void getById_ShouldReturnExpenseCategory() throws Exception {
             // Given
             Long expenseCategoryId = 1L;
-            ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
+            ExpenseCategoryResponseDto expenseCategoryResponse = createExpenseCategoryResponse();
 
-            when(expenseCategoryService.getById(anyLong())).thenReturn(expenseCategoryResponseDto);
+            when(expenseCategoryService.getById(anyLong())).thenReturn(expenseCategoryResponse);
 
             // When & Then
             mockMvc.perform(get(BASE_URL + "/{id}", expenseCategoryId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name")
-                    .value(expenseCategoryResponseDto.getName()))
+                    .value(expenseCategoryResponse.getName()))
                 .andExpect(jsonPath("$.description")
-                    .value(expenseCategoryResponseDto.getDescription()));
+                    .value(expenseCategoryResponse.getDescription()));
 
             verify(expenseCategoryService, times(1)).getById(anyLong());
         }
@@ -173,19 +173,19 @@ class ExpenseCategoryControllerIntegrationTest {
         void getByName_ShouldReturnListOfExpenseCategories() throws Exception {
             // Given
             String name = "TEST";
-            ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
+            ExpenseCategoryResponseDto expenseCategoryResponse = createExpenseCategoryResponse();
 
             when(expenseCategoryService.getByName(name))
-                .thenReturn(List.of(expenseCategoryResponseDto));
+                .thenReturn(List.of(expenseCategoryResponse));
 
             // When & Then
             mockMvc.perform(get(BASE_URL + "/search").param("name", name))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()").value(1))
                 .andExpect(jsonPath("$[0].name")
-                    .value(expenseCategoryResponseDto.getName()))
+                    .value(expenseCategoryResponse.getName()))
                 .andExpect(jsonPath("$[0].description")
-                    .value(expenseCategoryResponseDto.getDescription()));
+                    .value(expenseCategoryResponse.getDescription()));
 
             verify(expenseCategoryService, times(1)).getByName(name);
         }
@@ -224,10 +224,10 @@ class ExpenseCategoryControllerIntegrationTest {
         void create_ShouldReturnCreatedExpenseCategory() throws Exception {
             // Given
             ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
-            ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
+            ExpenseCategoryResponseDto expenseCategoryResponse = createExpenseCategoryResponse();
 
             when(expenseCategoryService.create(any(ExpenseCategoryRequestDto.class)))
-                .thenReturn(expenseCategoryResponseDto);
+                .thenReturn(expenseCategoryResponse);
 
             // When & Then
             mockMvc.perform(post(BASE_URL)
@@ -235,10 +235,11 @@ class ExpenseCategoryControllerIntegrationTest {
                     .content(objectMapper.writeValueAsString(expenseCategoryRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name")
-                    .value(expenseCategoryResponseDto.getName()))
+                    .value(expenseCategoryResponse.getName()))
                 .andExpect(jsonPath("$.description")
-                    .value(expenseCategoryResponseDto.getDescription()))
-                .andExpect(jsonPath("$.expenses.size()").value(0));
+                    .value(expenseCategoryResponse.getDescription()))
+                .andExpect(jsonPath("$.expenses.size()")
+                    .value(0));
 
             verify(expenseCategoryService, times(1))
                 .create(any(ExpenseCategoryRequestDto.class));
