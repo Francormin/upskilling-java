@@ -80,19 +80,20 @@ public class ExpenseControllerIntegrationTest {
         @DisplayName("Should return a list of expenses")
         void getAll_ShouldReturnListOfExpenses() throws Exception {
             // Given
-            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
-            List<ExpenseResponseDto> expenses = List.of(testExpenseResponse);
-
-            when(expenseService.getAll()).thenReturn(expenses);
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+            when(expenseService.getAll()).thenReturn(List.of(expenseResponse));
 
             // When & Then
             mockMvc.perform(get(BASE_URL))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].amount", is(100.0)))
-                .andExpect(jsonPath("$[0].date", is("01-01-2024")))
-                .andExpect(jsonPath("$[0].description", is("Test Expense")))
-                .andExpect(jsonPath("$[0].expenseCategoryName", is("Food")))
-                .andExpect(jsonPath("$[0].userEmail", is("user@example.com")));
+                .andExpect(jsonPath("$[0].amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$[0].date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$[0].description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$[0].expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$[0].userEmail", is(expenseResponse.getUserEmail())));
 
             verify(expenseService, times(1)).getAll();
         }
@@ -125,17 +126,22 @@ public class ExpenseControllerIntegrationTest {
         @DisplayName("Should return an expense by ID")
         void getById_ShouldReturnExpense() throws Exception {
             // Given
-            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
-            when(expenseService.getById(anyLong())).thenReturn(testExpenseResponse);
+            Long expenseId = 1L;
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+
+            when(expenseService.getById(anyLong())).thenReturn(expenseResponse);
 
             // When & Then
-            mockMvc.perform(get(BASE_URL + "/{id}", 1L))
+            mockMvc.perform(get(BASE_URL + "/{id}", expenseId))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.amount", is(100.0)))
-                .andExpect(jsonPath("$.date", is("01-01-2024")))
-                .andExpect(jsonPath("$.description", is("Test Expense")))
-                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
-                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+                .andExpect(jsonPath("$.amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$.date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$.description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$.expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$.userEmail", is(expenseResponse.getUserEmail())));
 
             verify(expenseService, times(1)).getById(anyLong());
         }
@@ -170,23 +176,26 @@ public class ExpenseControllerIntegrationTest {
         @DisplayName("Should create a new expense and return it")
         void create_ShouldReturnCreatedExpense() throws Exception {
             // Given
-            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
-            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
+            ExpenseRequestDto expenseRequest = createTestExpenseRequest();
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
 
-            when(expenseService.create(testExpenseRequest)).thenReturn(testExpenseResponse);
+            when(expenseService.create(any(ExpenseRequestDto.class))).thenReturn(expenseResponse);
 
             // When & Then
             mockMvc.perform(post(BASE_URL)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                    .content(objectMapper.writeValueAsString(expenseRequest)))
                 .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.amount", is(100.0)))
-                .andExpect(jsonPath("$.date", is("01-01-2024")))
-                .andExpect(jsonPath("$.description", is("Test Expense")))
-                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
-                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+                .andExpect(jsonPath("$.amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$.date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$.description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$.expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$.userEmail", is(expenseResponse.getUserEmail())));
 
-            verify(expenseService, times(1)).create(testExpenseRequest);
+            verify(expenseService, times(1)).create(any(ExpenseRequestDto.class));
         }
 
         @ParameterizedTest
@@ -213,7 +222,7 @@ public class ExpenseControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(expenseService, times(0)).create(any());
+            verify(expenseService, times(0)).create(any(ExpenseRequestDto.class));
 
         }
 
@@ -242,7 +251,7 @@ public class ExpenseControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(expenseService, times(0)).create(any());
+            verify(expenseService, times(0)).create(any(ExpenseRequestDto.class));
 
         }
 
@@ -266,7 +275,7 @@ public class ExpenseControllerIntegrationTest {
                     containsString("UserId cannot be null")
                 )));
 
-            verify(expenseService, times(0)).create(any());
+            verify(expenseService, times(0)).create(any(ExpenseRequestDto.class));
         }
 
     }
@@ -279,22 +288,26 @@ public class ExpenseControllerIntegrationTest {
         @DisplayName("Should update an existing expense")
         void update_ShouldReturnUpdatedExpense() throws Exception {
             // Given
-            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
-            ExpenseResponseDto testExpenseResponse = createTestExpenseResponse();
+            ExpenseRequestDto expenseRequest = createTestExpenseRequest();
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+            Long expenseId = 1L;
 
             when(expenseService.update(anyLong(), any(ExpenseRequestDto.class)))
-                .thenReturn(testExpenseResponse);
+                .thenReturn(expenseResponse);
 
             // When & Then
-            mockMvc.perform(put(BASE_URL + "/{id}", 1L)
+            mockMvc.perform(put(BASE_URL + "/{id}", expenseId)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                    .content(objectMapper.writeValueAsString(expenseRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.amount", is(100.0)))
-                .andExpect(jsonPath("$.date", is("01-01-2024")))
-                .andExpect(jsonPath("$.description", is("Test Expense")))
-                .andExpect(jsonPath("$.expenseCategoryName", is("Food")))
-                .andExpect(jsonPath("$.userEmail", is("user@example.com")));
+                .andExpect(jsonPath("$.amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$.date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$.description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$.expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$.userEmail", is(expenseResponse.getUserEmail())));
 
             verify(expenseService, times(1))
                 .update(anyLong(), any(ExpenseRequestDto.class));
@@ -308,18 +321,18 @@ public class ExpenseControllerIntegrationTest {
             String expectedMessage) throws Exception {
 
             // Given
-            ExpenseRequestDto testExpenseRequest = createTestExpenseRequest();
-            given(expenseService.update(id, testExpenseRequest))
+            ExpenseRequestDto expenseRequest = createTestExpenseRequest();
+            given(expenseService.update(id, expenseRequest))
                 .willThrow(new EntityNotFoundException("Expense", id));
 
             // When & Then
             mockMvc.perform(put(BASE_URL + "/{id}", id)
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(testExpenseRequest)))
+                    .content(objectMapper.writeValueAsString(expenseRequest)))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.message", is(expectedMessage)));
 
-            verify(expenseService, times(1)).update(id, testExpenseRequest);
+            verify(expenseService, times(1)).update(id, expenseRequest);
 
         }
 
@@ -333,10 +346,11 @@ public class ExpenseControllerIntegrationTest {
         @DisplayName("Should delete an existing expense")
         void delete_ShouldReturnSuccessMessage() throws Exception {
             // Given
+            Long expenseId = 1L;
             doNothing().when(expenseService).delete(anyLong());
 
             // When & Then
-            mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
+            mockMvc.perform(delete(BASE_URL + "/{id}", expenseId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("Expense deleted successfully"));
 
