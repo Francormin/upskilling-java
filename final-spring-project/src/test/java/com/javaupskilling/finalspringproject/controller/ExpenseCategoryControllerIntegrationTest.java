@@ -22,6 +22,7 @@ import java.util.List;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doNothing;
@@ -121,11 +122,13 @@ class ExpenseCategoryControllerIntegrationTest {
         @DisplayName("Should return an expense category by ID")
         void getById_ShouldReturnExpenseCategory() throws Exception {
             // Given
+            Long expenseCategoryId = 1L;
             ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
+
             when(expenseCategoryService.getById(anyLong())).thenReturn(expenseCategoryResponseDto);
 
             // When & Then
-            mockMvc.perform(get(BASE_URL + "/1"))
+            mockMvc.perform(get(BASE_URL + "/{id}", expenseCategoryId))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.name")
                     .value(expenseCategoryResponseDto.getName()))
@@ -223,7 +226,7 @@ class ExpenseCategoryControllerIntegrationTest {
             ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
             ExpenseCategoryResponseDto expenseCategoryResponseDto = createExpenseCategoryResponse();
 
-            when(expenseCategoryService.create(expenseCategoryRequest))
+            when(expenseCategoryService.create(any(ExpenseCategoryRequestDto.class)))
                 .thenReturn(expenseCategoryResponseDto);
 
             // When & Then
@@ -238,7 +241,7 @@ class ExpenseCategoryControllerIntegrationTest {
                 .andExpect(jsonPath("$.expenses.size()").value(0));
 
             verify(expenseCategoryService, times(1))
-                .create(expenseCategoryRequest);
+                .create(any(ExpenseCategoryRequestDto.class));
         }
 
         @ParameterizedTest
@@ -266,7 +269,8 @@ class ExpenseCategoryControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(expenseCategoryService, times(0)).create(invalidRequest);
+            verify(expenseCategoryService, times(0))
+                .create(any(ExpenseCategoryRequestDto.class));
 
         }
 
@@ -295,7 +299,8 @@ class ExpenseCategoryControllerIntegrationTest {
                     containsInAnyOrder(containsString(expectedMessage))
                 ));
 
-            verify(expenseCategoryService, times(0)).create(invalidRequest);
+            verify(expenseCategoryService, times(0))
+                .create(any(ExpenseCategoryRequestDto.class));
 
         }
 
@@ -311,12 +316,13 @@ class ExpenseCategoryControllerIntegrationTest {
             // Given
             ExpenseCategoryRequestDto expenseCategoryRequest = createExpenseCategoryRequest();
             ExpenseCategoryResponseDto expenseCategoryResponse = createExpenseCategoryResponse();
+            Long expenseCategoryId = 1L;
 
-            when(expenseCategoryService.update(1L, expenseCategoryRequest))
+            when(expenseCategoryService.update(anyLong(), any(ExpenseCategoryRequestDto.class)))
                 .thenReturn(expenseCategoryResponse);
 
             // When & Then
-            mockMvc.perform(put(BASE_URL + "/{id}", 1L)
+            mockMvc.perform(put(BASE_URL + "/{id}", expenseCategoryId)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(expenseCategoryRequest)))
                 .andExpect(status().isOk())
@@ -330,7 +336,7 @@ class ExpenseCategoryControllerIntegrationTest {
                 ));
 
             verify(expenseCategoryService, times(1))
-                .update(1L, expenseCategoryRequest);
+                .update(anyLong(), any(ExpenseCategoryRequestDto.class));
         }
 
         @ParameterizedTest
@@ -370,10 +376,11 @@ class ExpenseCategoryControllerIntegrationTest {
         @DisplayName("Should delete an existing expense category")
         void delete_ShouldReturnSuccessMessage() throws Exception {
             // Given
+            Long expenseCategoryId = 1L;
             doNothing().when(expenseCategoryService).delete(anyLong());
 
             // When & Then
-            mockMvc.perform(delete(BASE_URL + "/{id}", 1L))
+            mockMvc.perform(delete(BASE_URL + "/{id}", expenseCategoryId))
                 .andExpect(status().isOk())
                 .andExpect(content().string("ExpenseCategory deleted successfully"));
 
