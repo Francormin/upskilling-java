@@ -320,7 +320,10 @@ class ExpenseCategoryControllerIntegrationTest {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(expenseCategoryRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.name", is(expenseCategoryResponse.getName())))
+                .andExpect(jsonPath(
+                    "$.name",
+                    is(expenseCategoryResponse.getName())
+                ))
                 .andExpect(jsonPath(
                     "$.description",
                     is(expenseCategoryResponse.getDescription())
