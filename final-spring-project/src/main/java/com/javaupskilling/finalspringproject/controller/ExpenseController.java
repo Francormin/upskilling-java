@@ -58,9 +58,12 @@ public class ExpenseController {
     }
 
     @GetMapping("/expense-category/{expenseCategoryId}")
-    public ResponseEntity<List<ExpenseResponseDto>> getByExpenseCategoryId(@PathVariable Long expenseCategoryId) {
+    public ResponseEntity<List<ExpenseResponseDto>> getByExpenseCategoryId(
+        @PathVariable Long expenseCategoryId) {
+
         validateId(expenseCategoryId);
         return ResponseEntity.ok(expenseService.getByExpenseCategoryId(expenseCategoryId));
+
     }
 
     @PostMapping
