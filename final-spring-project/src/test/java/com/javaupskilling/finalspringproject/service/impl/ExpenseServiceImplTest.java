@@ -177,7 +177,7 @@ class ExpenseServiceImplTest {
             () -> expenseService.getByUserId(1L)
         );
 
-        assertEquals("User: No expenses found for user ID 1", exception.getMessage());
+        assertEquals("Expense: No expenses found for user ID 1", exception.getMessage());
         verify(expenseRepository, times(1)).findByUserId(anyLong());
     }
 
