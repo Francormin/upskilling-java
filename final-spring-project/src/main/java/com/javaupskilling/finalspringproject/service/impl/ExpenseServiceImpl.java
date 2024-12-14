@@ -67,7 +67,7 @@ public class ExpenseServiceImpl implements ExpenseService {
     public List<ExpenseResponseDto> getByUserId(Long userId) {
         List<Expense> expenses = expenseRepository.findByUserId(userId);
         if (expenses.isEmpty()) {
-            throw new EntityNotFoundException("User", "No expenses found for user ID " + userId);
+            throw new EntityNotFoundException("Expense", "No expenses found for user ID " + userId);
         }
 
         return expenses.stream()
