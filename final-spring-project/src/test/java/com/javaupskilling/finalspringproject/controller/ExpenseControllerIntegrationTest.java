@@ -169,6 +169,170 @@ public class ExpenseControllerIntegrationTest {
     }
 
     @Nested
+    @DisplayName("GET " + BASE_URL + "/user/{userId}")
+    class GetExpensesByUserId {
+
+        @Test
+        @DisplayName("Should return a list of expenses by user ID")
+        void getByUserId_ShouldReturnListOfExpenses() throws Exception {
+            // Given
+            Long userId = 1L;
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+
+            when(expenseService.getByUserId(userId)).thenReturn(List.of(expenseResponse));
+
+            // When & Then
+            mockMvc.perform(get(BASE_URL + "/user/{userId}", userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$[0].date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$[0].description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$[0].expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$[0].userEmail", is(expenseResponse.getUserEmail())));
+
+            verify(expenseService, times(1)).getByUserId(userId);
+        }
+
+        @Test
+        @DisplayName("Should return not found when no expenses match the user ID")
+        void getByUserId_ShouldReturnNotFoundWhenNoExpensesFound() throws Exception {
+            // Given
+            Long userId = 1L;
+            given(expenseService.getByUserId(userId))
+                .willThrow(new EntityNotFoundException(
+                    "Expense",
+                    "No expenses found for user ID " + userId)
+                );
+
+            // When & Then
+            mockMvc.perform(get(BASE_URL + "/user/{userId}", userId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath(
+                    "$.message",
+                    is("Expense: No expenses found for user ID " + userId)
+                ));
+
+            verify(expenseService, times(1)).getByUserId(userId);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("GET " + BASE_URL + "/date")
+    class GetExpensesByDate {
+
+        @Test
+        @DisplayName("Should return a list of expenses by date")
+        void getByDate_ShouldReturnListOfExpenses() throws Exception {
+            // Given
+            String date = "01-01-2024";
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+
+            when(expenseService.getByDate(date)).thenReturn(List.of(expenseResponse));
+
+            // When & Then
+            mockMvc.perform(get(BASE_URL + "/date").param("date", date))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$[0].date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$[0].description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$[0].expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$[0].userEmail", is(expenseResponse.getUserEmail())));
+
+            verify(expenseService, times(1)).getByDate(date);
+        }
+
+        @Test
+        @DisplayName("Should return not found when no expenses match the date")
+        void getByDate_ShouldReturnNotFoundWhenNoExpensesFound() throws Exception {
+            // Given
+            String date = "10-01-2024";
+            given(expenseService.getByDate(date))
+                .willThrow(new EntityNotFoundException("Expense", "No expenses found for date " + date));
+
+            // When & Then
+            mockMvc.perform(get(BASE_URL + "/date").param("date", date))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath(
+                    "$.message",
+                    is("Expense: No expenses found for date " + date)
+                ));
+
+            verify(expenseService, times(1)).getByDate(date);
+        }
+
+    }
+
+    @Nested
+    @DisplayName("GET " + BASE_URL + "/expense-category/{expenseCategoryId}")
+    class GetExpensesByExpenseCategoryId {
+
+        @Test
+        @DisplayName("Should return a list of expenses by expense category ID")
+        void getByExpenseCategoryId_ShouldReturnListOfExpenses() throws Exception {
+            // Given
+            Long expenseCategoryId = 1L;
+            ExpenseResponseDto expenseResponse = createTestExpenseResponse();
+
+            when(expenseService.getByExpenseCategoryId(expenseCategoryId))
+                .thenReturn(List.of(expenseResponse));
+
+            // When & Then
+            mockMvc.perform(get(
+                    BASE_URL + "/expense-category/{expenseCategoryId}",
+                    expenseCategoryId
+                ))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()").value(1))
+                .andExpect(jsonPath("$[0].amount", is(expenseResponse.getAmount())))
+                .andExpect(jsonPath("$[0].date", is(expenseResponse.getDate())))
+                .andExpect(jsonPath("$[0].description", is(expenseResponse.getDescription())))
+                .andExpect(jsonPath(
+                    "$[0].expenseCategoryName",
+                    is(expenseResponse.getExpenseCategoryName())
+                ))
+                .andExpect(jsonPath("$[0].userEmail", is(expenseResponse.getUserEmail())));
+
+            verify(expenseService, times(1))
+                .getByExpenseCategoryId(expenseCategoryId);
+        }
+
+        @Test
+        @DisplayName("Should return not found when no expenses match the expense category ID")
+        void getByExpenseCategoryId_ShouldReturnNotFoundWhenNoExpensesFound() throws Exception {
+            // Given
+            Long expenseCategoryId = 1L;
+            given(expenseService.getByExpenseCategoryId(expenseCategoryId))
+                .willThrow(new EntityNotFoundException(
+                    "Expense",
+                    "No expenses found for expense category ID " + expenseCategoryId)
+                );
+
+            // When & Then
+            mockMvc.perform(get(
+                    BASE_URL + "/expense-category/{expenseCategoryId}",
+                    expenseCategoryId))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath(
+                    "$.message",
+                    is("Expense: No expenses found for expense category ID " + expenseCategoryId)
+                ));
+
+            verify(expenseService, times(1))
+                .getByExpenseCategoryId(expenseCategoryId);
+        }
+
+    }
+
+    @Nested
     @DisplayName("POST " + BASE_URL)
     class CreateExpenses {
 
