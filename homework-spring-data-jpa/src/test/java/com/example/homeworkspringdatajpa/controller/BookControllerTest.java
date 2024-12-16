@@ -12,6 +12,8 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -29,13 +31,38 @@ class BookControllerTest {
     @MockitoBean
     private BookService bookService;
 
+    private BookDTO createBookDTO(
+        String title,
+        String author,
+        Integer publishYear, Integer pageQuantity) {
+
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setTitle(title);
+        bookDTO.setAuthor(author);
+        bookDTO.setPublishYear(publishYear);
+        bookDTO.setPageQuantity(pageQuantity);
+        return bookDTO;
+
+    }
+
     @Test
     void shouldReturnListOfBooks() throws Exception {
         // Given
-        List<BookDTO> books = List.of(
-            new BookDTO("Book One", "Author One", 2020, 200),
-            new BookDTO("Book Two", "Author Two", 2021, 300)
+        BookDTO bookDTO1 = createBookDTO(
+            "Book One",
+            "Author One",
+            2020,
+            200
         );
+
+        BookDTO bookDTO2 = createBookDTO(
+            "Book Two",
+            "Author Two",
+            2021,
+            300
+        );
+
+        List<BookDTO> books = List.of(bookDTO1, bookDTO2);
 
         when(bookService.getAllBooks()).thenReturn(books);
 
@@ -51,9 +78,14 @@ class BookControllerTest {
     void shouldReturnBookById() throws Exception {
         // Given
         Long bookId = 1L;
-        when(bookService.getBookById(bookId)).thenReturn(
-            new BookDTO("Title1", "Author1", 2020, 300)
+        BookDTO bookDTO = createBookDTO(
+            "Title1",
+            "Author1",
+            2020,
+            300
         );
+
+        when(bookService.getBookById(bookId)).thenReturn(bookDTO);
 
         // When & Then
         mockMvc.perform(get("/api/books/{id}", bookId))
@@ -65,10 +97,21 @@ class BookControllerTest {
     @Test
     void shouldReturnBooksByAuthor() throws Exception {
         // Given
-        List<BookDTO> books = List.of(
-            new BookDTO("Book One", "Author One", 2020, 200),
-            new BookDTO("Book Two", "Author One", 2021, 300)
+        BookDTO bookDTO1 = createBookDTO(
+            "Book One",
+            "Author One",
+            2020,
+            200
         );
+
+        BookDTO bookDTO2 = createBookDTO(
+            "Book Two",
+            "Author One",
+            2021,
+            300
+        );
+
+        List<BookDTO> books = List.of(bookDTO1, bookDTO2);
 
         when(bookService.getBooksByAuthor("Author One")).thenReturn(books);
 
@@ -84,10 +127,21 @@ class BookControllerTest {
     @Test
     void shouldReturnBooksByTitle() throws Exception {
         // Given
-        List<BookDTO> books = List.of(
-            new BookDTO("Valid Title", "Author One", 2020, 200),
-            new BookDTO("Valid Title", "Author Two", 2021, 300)
+        BookDTO bookDTO1 = createBookDTO(
+            "Valid Title",
+            "Author One",
+            2020,
+            200
         );
+
+        BookDTO bookDTO2 = createBookDTO(
+            "Valid Title",
+            "Author Two",
+            2021,
+            300
+        );
+
+        List<BookDTO> books = List.of(bookDTO1, bookDTO2);
 
         when(bookService.getBooksByTitle("Valid Title")).thenReturn(books);
 
@@ -103,6 +157,13 @@ class BookControllerTest {
     @Test
     void shouldCreateBook() throws Exception {
         // Given
+        BookDTO bookDTO = createBookDTO(
+            "New Book",
+            "New Author",
+            2023,
+            250
+        );
+
         String bookJson = """
                 {
                     "title": "New Book",
@@ -112,9 +173,7 @@ class BookControllerTest {
                 }
             """;
 
-        when(bookService.createBook(
-            new BookDTO("New Book", "New Author", 2023, 250)
-        )).thenReturn(new BookDTO("New Book", "New Author", 2023, 250));
+        when(bookService.createBook(bookDTO)).thenReturn(bookDTO);
 
         // When & Then
         mockMvc.perform(post("/api/books")
@@ -144,8 +203,10 @@ class BookControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bookJson))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]")
-                .value("title: Title cannot be null nor blank"));
+            .andExpect(jsonPath("$", containsInAnyOrder(
+                containsString("title: Title cannot be null nor blank"),
+                containsString("title: Title must have between 2 and 60 characters")
+            )));
     }
 
     @Test
@@ -165,8 +226,10 @@ class BookControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(bookJson))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$[0]")
-                .value("author: Author cannot be null nor blank"));
+            .andExpect(jsonPath("$", containsInAnyOrder(
+                containsString("author: Author cannot be null nor blank"),
+                containsString("author: Author must have between 2 and 30 characters")
+            )));
     }
 
     @Test
@@ -215,6 +278,13 @@ class BookControllerTest {
     void shouldUpdateBook() throws Exception {
         // Given
         Long bookId = 1L;
+        BookDTO bookDTO = createBookDTO(
+            "Updated Title",
+            "Updated Author",
+            2022,
+            350
+        );
+
         String updatedBookJson = """
                 {
                     "title": "Updated Title",
@@ -224,12 +294,7 @@ class BookControllerTest {
                 }
             """;
 
-        when(bookService.updateBook(
-            bookId,
-            new BookDTO("Updated Title", "Updated Author", 2022, 350)
-        )).thenReturn(
-            new BookDTO("Updated Title", "Updated Author", 2022, 350)
-        );
+        when(bookService.updateBook(bookId, bookDTO)).thenReturn(bookDTO);
 
         // When & Then
         mockMvc.perform(put("/api/books/{id}", bookId)
