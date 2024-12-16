@@ -30,13 +30,58 @@ class BookServiceTest {
     @InjectMocks
     private BookService bookService;
 
+    private Book createBook(
+        Long id,
+        String title,
+        String author,
+        Integer publishYear,
+        Integer pageQuantity) {
+
+        Book book = new Book();
+        book.setId(id);
+        book.setTitle(title);
+        book.setAuthor(author);
+        book.setPublishYear(publishYear);
+        book.setPageQuantity(pageQuantity);
+        return book;
+
+    }
+
+    private BookDTO createBookDTO(
+        String title,
+        String author,
+        Integer publishYear,
+        Integer pageQuantity) {
+
+        BookDTO bookDTO = new BookDTO();
+        bookDTO.setTitle(title);
+        bookDTO.setAuthor(author);
+        bookDTO.setPublishYear(publishYear);
+        bookDTO.setPageQuantity(pageQuantity);
+        return bookDTO;
+
+    }
+
     @Test
     void shouldGetAllBooks() {
         // Given
-        List<Book> books = List.of(
-            new Book(1L, "Spring in Action", "Craig Walls", 2018, 450),
-            new Book(2L, "Spring Boot Guide", "Mark Heckler", 2020, 320)
+        Book book1 = createBook(
+            1L,
+            "Spring in Action",
+            "Craig Walls",
+            2018,
+            450
         );
+
+        Book book2 = createBook(
+            2L,
+            "Spring Boot Guide",
+            "Mark Heckler",
+            2020,
+            320
+        );
+
+        List<Book> books = List.of(book1, book2);
 
         when(bookRepository.findAll()).thenReturn(books);
 
@@ -54,7 +99,7 @@ class BookServiceTest {
     void shouldGetBookById() {
         // Given
         Long bookId = 1L;
-        Book book = new Book(
+        Book book = createBook(
             bookId,
             "Spring in Action",
             "Craig Walls",
@@ -89,19 +134,22 @@ class BookServiceTest {
     @Test
     void shouldCreateBook() {
         // Given
-        Book book = new Book();
-        book.setTitle("Spring Data JPA");
-        book.setAuthor("John Doe");
-        book.setPublishYear(2020);
-        book.setPageQuantity(300);
+        Book book = createBook(
+            1L,
+            "Spring Data JPA",
+            "John Doe",
+            2020,
+            300
+        );
+
+        BookDTO dto = createBookDTO(
+            "Spring Data JPA",
+            "John Doe",
+            2020,
+            300
+        );
 
         when(bookRepository.save(any(Book.class))).thenReturn(book);
-
-        BookDTO dto = new BookDTO();
-        dto.setTitle("Spring Data JPA");
-        dto.setAuthor("John Doe");
-        dto.setPublishYear(2020);
-        dto.setPageQuantity(300);
 
         // When
         BookDTO createdBook = bookService.createBook(dto);
@@ -116,18 +164,20 @@ class BookServiceTest {
     void shouldUpdateBook() {
         // Given
         Long bookId = 1L;
-        Book existingBook = new Book();
-        existingBook.setId(bookId);
-        existingBook.setTitle("Old Title");
-        existingBook.setAuthor("Old Author");
-        existingBook.setPublishYear(1990);
-        existingBook.setPageQuantity(200);
+        Book existingBook = createBook(
+            bookId,
+            "Old Title",
+            "Old Author",
+            1990,
+            200
+        );
 
-        BookDTO dto = new BookDTO();
-        dto.setTitle("Updated Title");
-        dto.setAuthor("Updated Author");
-        dto.setPublishYear(2020);
-        dto.setPageQuantity(400);
+        BookDTO dto = createBookDTO(
+            "Updated Title",
+            "Updated Author",
+            2020,
+            400
+        );
 
         when(bookRepository.findById(bookId)).thenReturn(Optional.of(existingBook));
         when(bookRepository.save(any(Book.class))).thenAnswer(invocation -> invocation.getArgument(0));
@@ -160,10 +210,23 @@ class BookServiceTest {
     void shouldGetBooksByAuthor() {
         // Given
         String author = "John Doe";
-        List<Book> books = List.of(
-            new Book(null, "Book 1", author, 2020, 300),
-            new Book(null, "Book 2", author, 2021, 250)
+
+        Book book1 = createBook(
+            1L,
+            "Book 1",
+            author,
+            2020,
+            300
         );
+        Book book2 = createBook(
+            2L,
+            "Book 2",
+            author,
+            2021,
+            250
+        );
+
+        List<Book> books = List.of(book1, book2);
 
         when(bookRepository.findByAuthorContainingIgnoreCase(author)).thenReturn(books);
 
@@ -206,10 +269,23 @@ class BookServiceTest {
     void shouldGetBooksByTitle() {
         // Given
         String title = "Spring";
-        List<Book> books = List.of(
-            new Book(null, "Spring in Action", "Craig Walls", 2018, 450),
-            new Book(null, "Spring Boot Guide", "Mark Heckler", 2020, 320)
+
+        Book book1 = createBook(
+            1L,
+            "Spring in Action",
+            "Craig Walls",
+            2018,
+            450
         );
+        Book book2 = createBook(
+            2L,
+            "Spring Boot Guide",
+            "Mark Heckler",
+            2020,
+            320
+        );
+
+        List<Book> books = List.of(book1, book2);
 
         when(bookRepository.findByTitleContainingIgnoreCase(title)).thenReturn(books);
 
