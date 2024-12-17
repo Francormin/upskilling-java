@@ -2,14 +2,11 @@ package com.example.homeworkorm.repository;
 
 import com.example.homeworkorm.entity.Masterpiece;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-@Repository
-public interface MasterpieceRepository extends JpaRepository<Masterpiece, Long> {
+public interface MasterpieceRepository extends IRepository<Masterpiece> {
 
     /**
      * Encuentra todas las obras de arte asociadas con un artista específico.
@@ -19,6 +16,8 @@ public interface MasterpieceRepository extends JpaRepository<Masterpiece, Long> 
      */
     // SELECT m FROM Masterpiece m JOIN FETCH m.artist WHERE m.artist.id = :artistId
     // @Query("SELECT m FROM Masterpiece m WHERE m.artist.id = :artistId")
-    List<Masterpiece> findByArtistId(@Param("artistId") Long artistId);
+    // List<Masterpiece> findByArtistId(@Param("artistId") Long artistId);
+
+    List<Masterpiece> findByArtistId(Long artistId);
 
 }
