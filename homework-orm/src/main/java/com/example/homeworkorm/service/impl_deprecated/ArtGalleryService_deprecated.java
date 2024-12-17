@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class ArtGalleryService extends AbstractService<ArtGallery, ArtGalleryRepository> {
+public class ArtGalleryService_deprecated extends AbstractService_deprecated<ArtGallery, ArtGalleryRepository> {
 
     private final ArtistRepository artistRepository;
 
-    public ArtGalleryService(ArtGalleryRepository repository, ArtistRepository artistRepository) {
+    public ArtGalleryService_deprecated(ArtGalleryRepository repository, ArtistRepository artistRepository) {
         super(repository, "Art Gallery");
         this.artistRepository = artistRepository;
     }

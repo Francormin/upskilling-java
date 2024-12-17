@@ -11,11 +11,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class MasterpieceService extends AbstractService<Masterpiece, MasterpieceRepository> {
+public class MasterpieceService_deprecated extends AbstractService_deprecated<Masterpiece, MasterpieceRepository> {
 
     private final ArtistRepository artistRepository;
 
-    public MasterpieceService(MasterpieceRepository repository, ArtistRepository artistRepository) {
+    public MasterpieceService_deprecated(MasterpieceRepository repository, ArtistRepository artistRepository) {
         super(repository, "Masterpiece");
         this.artistRepository = artistRepository;
     }

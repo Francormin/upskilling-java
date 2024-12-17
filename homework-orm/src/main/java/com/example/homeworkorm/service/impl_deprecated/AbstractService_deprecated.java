@@ -8,12 +8,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public abstract class AbstractService<T, R extends JpaRepository<T, Long>> implements IService<T> {
+@Deprecated
+public abstract class AbstractService_deprecated<T, R extends JpaRepository<T, Long>> implements IService<T> {
 
     protected final R repository;
     private final String entityName;
 
-    public AbstractService(R repository, String entityName) {
+    public AbstractService_deprecated(R repository, String entityName) {
         this.repository = repository;
         this.entityName = entityName;
     }
