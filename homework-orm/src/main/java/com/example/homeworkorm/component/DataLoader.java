@@ -10,8 +10,6 @@ import com.example.homeworkorm.repository.MasterpieceRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.util.Arrays;
-
 @Component
 public class DataLoader implements CommandLineRunner {
 
@@ -81,27 +79,25 @@ public class DataLoader implements CommandLineRunner {
         ArtGallery museoPrado = new ArtGallery();
         museoPrado.setName("Museo del Prado");
         museoPrado.setDate("27-11-2024");
+        guernica.getArtGalleries().add(museoPrado);
+        nocheEstrellada.getArtGalleries().add(museoPrado);
+        museoPrado.getMasterpieces().add(guernica);
+        museoPrado.getMasterpieces().add(nocheEstrellada);
         artGalleryRepository.save(museoPrado);
 
         ArtGallery museoModerno = new ArtGallery();
         museoModerno.setName("Museo de Arte Moderno");
         museoModerno.setDate("27-11-2024");
+        impresionSolNaciente.getArtGalleries().add(museoModerno);
+        museoModerno.getMasterpieces().add(impresionSolNaciente);
         artGalleryRepository.save(museoModerno);
 
         ArtGallery museoOrsay = new ArtGallery();
         museoOrsay.setName("Museo de Orsay");
         museoOrsay.setDate("27-11-2024");
-        artGalleryRepository.save(museoOrsay);
-
-        // Relacionar galerías con obras
-        museoPrado.getMasterpieces().addAll(Arrays.asList(guernica, nocheEstrellada));
-        museoModerno.getMasterpieces().add(impresionSolNaciente);
+        guernica.getArtGalleries().add(museoOrsay);
         museoOrsay.getMasterpieces().add(guernica);
-        artGalleryRepository.saveAll(Arrays.asList(museoPrado, museoModerno, museoOrsay));
-
-        guernica.getArtGalleries().addAll(Arrays.asList(museoPrado, museoOrsay));
-        nocheEstrellada.getArtGalleries().add(museoPrado);
-        impresionSolNaciente.getArtGalleries().add(museoModerno);
+        artGalleryRepository.save(museoOrsay);
 
     }
 
