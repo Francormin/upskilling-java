@@ -1,5 +1,6 @@
 package com.example.homeworkorm.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,7 @@ public class ArtGallery {
         joinColumns = @JoinColumn(name = "art_gallery_id"),
         inverseJoinColumns = @JoinColumn(name = "masterpiece_id")
     )
+    @JsonIgnore
     private List<Masterpiece> masterpieces = new ArrayList<>();
 
 }
