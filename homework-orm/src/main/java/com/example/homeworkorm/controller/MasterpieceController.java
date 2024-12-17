@@ -1,8 +1,9 @@
 package com.example.homeworkorm.controller;
 
 import com.example.homeworkorm.entity.Masterpiece;
-import com.example.homeworkorm.service.impl.MasterpieceService;
+import com.example.homeworkorm.service.MasterpieceService;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,35 +20,40 @@ import java.util.List;
 @RequestMapping("/masterpieces")
 public class MasterpieceController {
 
-    private final MasterpieceService masterpieceService;
+    private final MasterpieceService service;
 
-    public MasterpieceController(MasterpieceService masterpieceService) {
-        this.masterpieceService = masterpieceService;
+    public MasterpieceController(MasterpieceService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Masterpiece> getAllMasterpieces() {
-        return masterpieceService.getAll();
+    public ResponseEntity<?> getAllMasterpieces() {
+        List<Masterpiece> masterpieces = service.getAll();
+        return new ResponseEntity<>(masterpieces, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Masterpiece getMasterpieceById(@PathVariable Long id) {
-        return masterpieceService.getById(id);
+    public ResponseEntity<?> getMasterpieceById(@PathVariable Long id) {
+        Masterpiece masterpiece = service.getById(id);
+        return new ResponseEntity<>(masterpiece, HttpStatus.OK);
     }
 
     @PostMapping
-    public void addMasterpiece(@RequestBody Masterpiece masterpiece) {
-        masterpieceService.add(masterpiece);
+    public ResponseEntity<String> addMasterpiece(@RequestBody Masterpiece masterpiece) {
+        service.add(masterpiece);
+        return new ResponseEntity<>("Masterpiece created successfully", HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public void updateMasterpiece(@PathVariable Long id, @RequestBody Masterpiece masterpiece) {
-        masterpieceService.update(id, masterpiece);
+    public ResponseEntity<String> updateMasterpiece(@PathVariable Long id, @RequestBody Masterpiece masterpiece) {
+        service.update(id, masterpiece);
+        return new ResponseEntity<>("Masterpiece updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteMasterpiece(@PathVariable Long id) {
-        masterpieceService.delete(id);
+    public ResponseEntity<String> deleteMasterpiece(@PathVariable Long id) {
+        service.delete(id);
+        return new ResponseEntity<>("Masterpiece deleted successfully", HttpStatus.OK);
     }
 
     /**
@@ -57,9 +63,9 @@ public class MasterpieceController {
      * @return Lista de obras de arte.
      */
     @GetMapping("/by-artist/{artistId}")
-    public ResponseEntity<?> getMasterpiecesByArtist(@PathVariable Long artistId) {
-        List<Masterpiece> masterpieces = masterpieceService.getMasterpiecesByArtist(artistId);
-        return ResponseEntity.ok(masterpieces);
+    public ResponseEntity<?> getMasterpiecesByArtistId(@PathVariable Long artistId) {
+        List<Masterpiece> masterpieces = service.getByArtistId(artistId);
+        return new ResponseEntity<>(masterpieces, HttpStatus.OK);
     }
 
 }
