@@ -1,8 +1,10 @@
 package com.example.homeworkorm.controller;
 
 import com.example.homeworkorm.entity.Artist;
-import com.example.homeworkorm.service.impl.ArtistService;
+import com.example.homeworkorm.service.ArtistService;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -18,35 +20,40 @@ import java.util.List;
 @RequestMapping("/artists")
 public class ArtistController {
 
-    private final ArtistService artistService;
+    private final ArtistService service;
 
-    public ArtistController(ArtistService artistService) {
-        this.artistService = artistService;
+    public ArtistController(ArtistService service) {
+        this.service = service;
     }
 
     @GetMapping
-    public List<Artist> getAllArtists() {
-        return artistService.getAll();
+    public ResponseEntity<?> getAllArtists() {
+        List<Artist> artists = service.getAll();
+        return new ResponseEntity<>(artists, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
-    public Artist getArtistById(@PathVariable Long id) {
-        return artistService.getById(id);
+    public ResponseEntity<?> getArtistById(@PathVariable Long id) {
+        Artist artist = service.getById(id);
+        return new ResponseEntity<>(artist, HttpStatus.OK);
     }
 
     @PostMapping
-    public void addArtist(@RequestBody Artist artist) {
-        artistService.add(artist);
+    public ResponseEntity<String> addArtist(@RequestBody Artist artist) {
+        service.add(artist);
+        return new ResponseEntity<>("Artist created successfully", HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public void updateArtist(@PathVariable Long id, @RequestBody Artist artist) {
-        artistService.update(id, artist);
+    public ResponseEntity<String> updateArtist(@PathVariable Long id, @RequestBody Artist artist) {
+        service.update(id, artist);
+        return new ResponseEntity<>("Artist updated successfully", HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
-    public void deleteArtist(@PathVariable Long id) {
-        artistService.delete(id);
+    public ResponseEntity<String> deleteArtist(@PathVariable Long id) {
+        service.delete(id);
+        return new ResponseEntity<>("Artist deleted successfully", HttpStatus.OK);
     }
 
 }
