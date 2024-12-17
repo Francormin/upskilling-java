@@ -1,22 +1,19 @@
-package com.example.homeworkorm.service.impl;
+package com.example.homeworkorm.service.impl_deprecated;
 
-import com.example.homeworkorm.entity.Masterpiece;
 import com.example.homeworkorm.exception.EntityNotFoundException;
 import com.example.homeworkorm.repository.ArtistRepository;
 import com.example.homeworkorm.repository.MasterpieceRepository;
-import com.example.homeworkorm.util.ExceptionMessageUtil;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Deprecated
 @Service
-public class MasterpieceService_deprecated extends AbstractService_deprecated<Masterpiece, MasterpieceRepository> {
+public class MasterpieceService_deprecated {
 
     private final ArtistRepository artistRepository;
 
     public MasterpieceService_deprecated(MasterpieceRepository repository, ArtistRepository artistRepository) {
-        super(repository, "Masterpiece");
+//        super(repository, "Masterpiece");
         this.artistRepository = artistRepository;
     }
 
@@ -27,14 +24,14 @@ public class MasterpieceService_deprecated extends AbstractService_deprecated<Ma
      * @return Lista de obras de arte asociadas al artista.
      * @throws EntityNotFoundException si no existe un artista con el ID proporcionado.
      */
-    public List<Masterpiece> getMasterpiecesByArtist(Long artistId) {
-        if (!artistRepository.existsById(artistId)) {
-            throw new EntityNotFoundException(
-                ExceptionMessageUtil.entityNotFound("Artist", artistId)
-            );
-        }
-        return repository.findByArtistId(artistId);
-    }
+//    public List<Masterpiece> getMasterpiecesByArtist(Long artistId) {
+//        if (!artistRepository.existsById(artistId)) {
+//            throw new EntityNotFoundException(
+//                ExceptionMessageUtil.entityNotFound("Artist", artistId)
+//            );
+//        }
+//        return repository.findByArtistId(artistId);
+//    }
 
     /**
      * Obtiene todas las galerías de arte en las que exhibe un artista específico.

@@ -1,22 +1,19 @@
-package com.example.homeworkorm.service.impl;
+package com.example.homeworkorm.service.impl_deprecated;
 
-import com.example.homeworkorm.entity.ArtGallery;
 import com.example.homeworkorm.exception.EntityNotFoundException;
 import com.example.homeworkorm.repository.ArtGalleryRepository;
 import com.example.homeworkorm.repository.ArtistRepository;
-import com.example.homeworkorm.util.ExceptionMessageUtil;
 
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
+@Deprecated
 @Service
-public class ArtGalleryService_deprecated extends AbstractService_deprecated<ArtGallery, ArtGalleryRepository> {
+public class ArtGalleryService_deprecated {
 
     private final ArtistRepository artistRepository;
 
     public ArtGalleryService_deprecated(ArtGalleryRepository repository, ArtistRepository artistRepository) {
-        super(repository, "Art Gallery");
+//        super(repository, "Art Gallery");
         this.artistRepository = artistRepository;
     }
 
@@ -27,13 +24,13 @@ public class ArtGalleryService_deprecated extends AbstractService_deprecated<Art
      * @return Lista de galerías de arte asociadas al artista.
      * @throws EntityNotFoundException si no existe un artista con el ID proporcionado.
      */
-    public List<ArtGallery> getArtGalleriesByArtist(Long artistId) {
-        if (!artistRepository.existsById(artistId)) {
-            throw new EntityNotFoundException(
-                ExceptionMessageUtil.entityNotFound("Artist", artistId)
-            );
-        }
-        return repository.findByArtistId(artistId);
-    }
+//    public List<ArtGallery> getArtGalleriesByArtist(Long artistId) {
+//        if (!artistRepository.existsById(artistId)) {
+//            throw new EntityNotFoundException(
+//                ExceptionMessageUtil.entityNotFound("Artist", artistId)
+//            );
+//        }
+//        return repository.findByArtistId(artistId);
+//    }
 
 }

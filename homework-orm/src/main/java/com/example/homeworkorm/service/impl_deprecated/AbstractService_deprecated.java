@@ -1,4 +1,4 @@
-package com.example.homeworkorm.service.impl;
+package com.example.homeworkorm.service.impl_deprecated;
 
 import com.example.homeworkorm.exception.EntityNotFoundException;
 import com.example.homeworkorm.service.IService;
