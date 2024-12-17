@@ -1,7 +1,9 @@
 package com.example.homeworkorm.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -33,9 +35,10 @@ public class Masterpiece {
 
     @ManyToOne
     @JoinColumn(name = "artist_id")
+    @JsonIgnore
     private Artist artist;
 
-    @ManyToMany(mappedBy = "masterpieces")
+    @ManyToMany(mappedBy = "masterpieces", fetch = FetchType.EAGER)
     private List<ArtGallery> artGalleries = new ArrayList<>();
 
 }
