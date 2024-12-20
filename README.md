@@ -51,7 +51,7 @@ Para ejecutar el proyecto integrador en tu entorno local, sigue estos pasos:
    git clone https://github.com/Francormin/upskilling-java.git
 2. **Navegue al directorio del proyecto**:
    ```bash
-   cd upskilling-java/final-project
+   cd upskilling-java/final-spring-project
 3. **Compile y ejecute la aplicación utilizando Maven**:
    ```bash
    mvn spring-boot:run
